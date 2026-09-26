@@ -65,6 +65,14 @@ export const GENERIC_RULES: PatternRule[] = [
     pl: 'Po tym przyimku zawsze Dativ.',
   },
   {
+    pattern: String.raw`\b(arbeite|arbeitest|arbeitet|arbeiten|wohne|wohnst|wohnt|wohnen|lebe|lebt|leben|bin|bist|ist|sind|studiere|studiert)\s+(jetzt\s+|seit\s+\w+\s+|hier\s+)?in\s+(eine|die|das|einen)\b`,
+    target: 'wechselpraep',
+    category: 'prepositions',
+    severity: 2,
+    message: 'Wo? → Dativ: „in einer Kanzlei“, „in der Stadt“, „im Büro“.',
+    pl: 'Gdzie? → Dativ: in einer / in der / im.',
+  },
+  {
     pattern: String.raw`\b(fuer|durch|gegen|ohne)\s+(dem|einem|einer)\b`,
     target: 'akk-praep',
     category: 'cases',

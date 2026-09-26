@@ -16,7 +16,7 @@ function Radar({ skills, ghost }: { skills: Record<SkillId, number>; ghost?: Rec
   };
   const poly = (src: Record<SkillId, number>) => keys.map((k, i) => pt(i, Math.max(40, src[k])).join(',')).join(' ');
   return (
-    <svg viewBox="0 0 320 320" width="100%" style={{ maxWidth: 360 }}>
+    <svg viewBox="-50 -10 420 340" width="100%" style={{ maxWidth: 420 }}>
       {[0.25, 0.5, 0.75, 1].map((r) => (
         <polygon key={r} points={keys.map((_, i) => pt(i, r * 1000).join(',')).join(' ')} fill="none" stroke="#fff" strokeOpacity="0.08" />
       ))}

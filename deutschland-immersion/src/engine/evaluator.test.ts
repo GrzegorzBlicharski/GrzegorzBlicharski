@@ -67,6 +67,11 @@ describe('generic rules', () => {
     expect(g('Ich komme später, weil ich neu hier bin.')).not.toContain('nebensatz-verbend');
     expect(g('Ich weiß nicht, ob ich hier richtig bin.')).not.toContain('nebensatz-verbend');
   });
+  it('Wo? + in + accusative', () => {
+    expect(g('Ich arbeite in eine Kanzlei.')).toContain('wechselpraep');
+    expect(g('Ich arbeite in einer Kanzlei.')).not.toContain('wechselpraep');
+    expect(g('Ich gehe in die Kanzlei.')).not.toContain('wechselpraep');
+  });
   it('V2 inversion', () => {
     expect(g('Heute ich habe keine Zeit.')).toContain('v2-inversion');
     expect(g('Heute habe ich keine Zeit.')).not.toContain('v2-inversion');

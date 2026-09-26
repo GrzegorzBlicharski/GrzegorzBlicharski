@@ -70,7 +70,12 @@ export async function aiReview(input: string, spec: FreeInputSpec, rules: Evalua
       ...rules,
       tier: r.tier as Tier,
       dims,
-      score: clamp(dims.correctness * 0.3 + dims.precision * 0.3 + dims.register * 0.15 + dims.naturalness * 0.15 + dims.idiomaticity * 0.1),
+      score: (() => {
+        const cap: Record<Tier, [number, number]> = { incorrect: [0, 35], understandable: [36, 60], correct: [61, 78], natural: [79, 89], professional: [90, 95], native: [96, 100] };
+        const raw = dims.correctness * 0.3 + dims.precision * 0.3 + dims.register * 0.15 + dims.naturalness * 0.15 + dims.idiomaticity * 0.1;
+        const [lo, hi] = cap[r.tier as Tier];
+        return clamp(Math.max(lo, Math.min(hi, raw)));
+      })(),
       issues: [
         ...rules.issues,
         ...r.issues

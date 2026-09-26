@@ -269,8 +269,8 @@ input, textarea, select { font: inherit; color: inherit; user-select: text; }
 
 /* map */
 .map-wrap { position: relative; flex: 1; display: flex; }
-.map-svg { flex: 1; height: 100%; }
-.map-side { width: 360px; padding: 34px 28px; border-left: 1px solid var(--line); background: rgba(0, 0, 0, 0.4); overflow: auto; }
+.map-svg { flex: 1; min-width: 0; height: 100%; }
+.map-side { flex: none; width: 360px; padding: 34px 28px; border-left: 1px solid var(--line); background: rgba(0, 0, 0, 0.4); overflow: auto; }
 .map-pin { cursor: pointer; }
 .map-pin text { font-family: var(--ui); font-size: 13px; letter-spacing: 0.1em; fill: #fff; paint-order: stroke; stroke: #000; stroke-width: 4px; }
 .map-pin .sub { font-size: 10px; fill: var(--text-dim); }
@@ -411,7 +411,7 @@ input, textarea, select { font: inherit; color: inherit; user-select: text; }
 .term .coll { font-size: 12px; color: var(--text-faint); }
 
 /* training */
-.training { flex: 1; display: grid; place-items: center; padding: 40px; background: radial-gradient(ellipse at 50% 20%, rgba(255, 196, 110, 0.12), transparent 60%); }
+.training { flex: 1; display: grid; place-items: start center; overflow: auto; padding: 40px; background: radial-gradient(ellipse at 50% 20%, rgba(255, 196, 110, 0.12), transparent 60%); }
 .notebook { width: min(760px, 94vw); background: #f3eee2; color: #1c1a16; padding: 38px 46px; position: relative; box-shadow: 0 40px 120px rgba(0, 0, 0, 0.8); background-image: repeating-linear-gradient(0deg, transparent 0 31px, rgba(60, 90, 140, 0.18) 31px 32px); animation: rise 0.5s var(--ease) both; }
 .notebook::before { content: ''; position: absolute; left: 30px; top: 0; bottom: 0; width: 2px; background: rgba(200, 50, 60, 0.35); }
 .notebook h3 { font-family: var(--display); font-size: 34px; letter-spacing: 0.05em; margin: 0 0 4px; color: #1c1a16; }

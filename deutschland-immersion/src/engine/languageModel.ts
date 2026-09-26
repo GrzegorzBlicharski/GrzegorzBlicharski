@@ -147,8 +147,8 @@ export function recordTarget(p: LanguageProfile, id: string, q: number, mode: 'r
   if (q >= 0.7) {
     cur.successes++;
     cur.streak++;
-    // Expanding intervals: 20 min → 1 day → 3 days → 7 days → 16 days …
-    cur.intervalMin = cur.intervalMin <= 0 ? 20 : cur.intervalMin < 60 ? 1440 : Math.round(cur.intervalMin * 2.3);
+    // Expanding intervals: 20 min → 3 h → 1 day → 2.3× … (relearning after a lapse restarts short)
+    cur.intervalMin = cur.intervalMin <= 0 ? 20 : cur.intervalMin < 60 ? 180 : cur.intervalMin < 1440 ? 1440 : Math.round(cur.intervalMin * 2.3);
   } else {
     cur.errors++;
     cur.streak = 0;
@@ -187,7 +187,8 @@ export function vocabEvent(p: LanguageProfile, ids: string[], kind: 'seen' | 'lo
     if (kind === 'lookup') v.lookups++;
     if (kind === 'recognized') v.recog++;
     if (kind === 'produced') {
-      v.prod++;
+      // Production only counts again after a gap: mastery = spontaneous use over time, not repetition in one answer.
+      if (v.prod === 0 || now - v.lastProd > 10 * 60_000) v.prod++;
       v.lastProd = now;
     }
     vocab[id] = v;

@@ -164,11 +164,10 @@ export function evaluate(input: string, spec: FreeInputSpec, ctx: EvalContext = 
     if (dims.idiomaticity >= 85 && dims.naturalness >= 85) tier = 'native';
   } else tier = 'correct';
 
-  const score = clamp(
-    tier === 'incorrect'
-      ? Math.min(35, (dims.correctness + dims.precision) / 5)
-      : (dims.correctness * 0.3 + dims.precision * 0.3 + dims.register * 0.15 + dims.naturalness * 0.15 + dims.idiomaticity * 0.1),
-  );
+  // The score never contradicts the tier.
+  const CAP: Record<Tier, [number, number]> = { incorrect: [0, 35], understandable: [36, 60], correct: [61, 78], natural: [79, 89], professional: [90, 95], native: [96, 100] };
+  const raw100 = tier === 'incorrect' ? (dims.correctness + dims.precision) / 5 : dims.correctness * 0.3 + dims.precision * 0.3 + dims.register * 0.15 + dims.naturalness * 0.15 + dims.idiomaticity * 0.1;
+  const score = clamp(Math.max(CAP[tier][0], Math.min(CAP[tier][1], raw100)));
 
   // ---- the one most important improvement
   const sorted = [...issues].sort((a, b) => b.severity - a.severity);
