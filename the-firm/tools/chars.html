@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#111;overflow:hidden}</style></head>
+<body><canvas id="game"></canvas>
+<script src="../js/core.js"></script><script src="../js/gfx.js"></script><script src="../js/people.js"></script>
+<script>
+const g=F.ctx; F.screen();
+g.fillStyle='#1a1d24'; g.fillRect(0,0,1920,1080);
+const ids=Object.keys(F.people.cast).slice(0,7);
+const zoom = location.hash==='#close';
+ids.forEach((id,i)=>{
+  const c=F.people.cast[id];
+  const exprs=['neutral','amused','impatient','suspicious','impressed','tired','cold'];
+  if(zoom){ F.people.draw(g,c,140+i*270,1600,1500,{turn:[-0.3,0.2,0,0.4,-0.2,0.3,-0.4][i],expr:exprs[i],crop:'bust',light:{dir:i%2?1:-1,rimSide:i%2?-1:1}}); }
+  else F.people.draw(g,c,140+i*270,1000,800,{pose:['pockets','crossed','coffee','gesture','stand','hips','behind'][i],turn:[-0.3,0.2,0,0.4,-0.2,0.3,-0.4][i],expr:exprs[i],light:{dir:i%2?1:-1,rimSide:i%2?-1:1}});
+});
+</script></body></html>
