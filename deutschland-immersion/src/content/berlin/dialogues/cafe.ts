@@ -171,11 +171,17 @@ export const cafe_order = dlg('cafe_order', [
 ]);
 
 export const cafe_emre = dlg('cafe_emre', [
-  { id: 'e0', branch: [{ condition: { all: [{ mission: 'm_cafe', status: 'active' }, { flag: 'cafe_ordered', is: false }] }, next: '@cafe_order' }], next: 'e1' },
+  {
+    id: 'e0',
+    branch: [
+      { condition: { all: [{ mission: 'm_cafe', status: 'active' }, { flag: 'cafe_ordered', is: false }] }, next: '@cafe_order' },
+      { condition: { flag: 'emre_credit' }, next: 'e1credit' },
+    ],
+    next: 'e1',
+  },
   {
     id: 'e1',
     speaker: 'emre',
-    branch: [{ condition: { flag: 'emre_credit' }, next: 'e1credit' }],
     text: 'Na, wieder da? Die Maschine ist warm.',
     gloss: 'No, znowu jesteś? Ekspres jest ciepły.',
     next: 'e2',

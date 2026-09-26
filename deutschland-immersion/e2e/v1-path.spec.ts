@@ -50,6 +50,10 @@ async function travel(p: Page, loc: string) {
 }
 
 /** One step of the autopilot: resolve whatever the game is currently showing. */
+type Script = { answers: Record<string, string>; choice: Record<string, number>; fallback: string };
+const GOOD: Script = { answers: ANSWERS, choice: CHOICE, fallback: 'Ja, genau. Das mache ich gern.' };
+let SCRIPT: Script = GOOD;
+
 async function resolveUI(p: Page, log: string[]): Promise<boolean> {
   if (await visible(p, '[data-testid=chapter]')) return tap(p, '[data-testid=chapter]').then(() => true);
   if (await visible(p, '[data-testid=day2-card]')) return tap(p, '[data-testid=day2-card]').then(() => true);
@@ -81,13 +85,13 @@ async function resolveUI(p: Page, log: string[]): Promise<boolean> {
       return true;
     }
     if (await visible(p, '[data-testid=free-input]')) {
-      const a = ANSWERS[node] ?? 'Ja, genau. Das mache ich gern.';
+      const a = SCRIPT.answers[node] ?? SCRIPT.fallback;
       await p.fill('[data-testid=answer]', a, { timeout: 2000 }).catch(() => {});
       await tap(p, '[data-testid=submit]');
       return true;
     }
     if (await visible(p, '[data-testid=choice-0]')) {
-      await tap(p, `[data-testid=choice-${CHOICE[node] ?? 0}]`);
+      await tap(p, `[data-testid=choice-${SCRIPT.choice[node] ?? 0}]`);
       return true;
     }
     if (await visible(p, '[data-testid=dialogue] [data-testid=continue]')) {
@@ -114,6 +118,7 @@ async function settle(p: Page, log: string[], until: (s: G) => boolean, what: st
 test.setTimeout(600_000);
 
 test('Berlin Day 1 → Day 2: complete playable path with persistence', async ({ page: p }) => {
+  SCRIPT = GOOD;
   const errors: string[] = [];
   p.on('pageerror', (e) => errors.push(e.message));
   const log: string[] = [];
@@ -210,6 +215,71 @@ test('Berlin Day 1 → Day 2: complete playable path with persistence', async ({
   expect(after.missions.m_contract.status).toBe('completed');
   await expect(p.getByTestId('clock')).toBeVisible();
 
+  expect(errors).toEqual([]);
+  console.log(log.join('\n'));
+});
+
+/** Failure is gameplay: wrong train, no ticket, weak German, forgotten document — the story adapts, nothing dead-ends. */
+test('failure branches: detour, fine, weak answers, missing document on Day 2', async ({ page: p }) => {
+  SCRIPT = {
+    answers: {
+      'hbf_platforms.pl15sms': 'Frau Wiesner ich bin spät, falsche Zug. 8:40.',
+      'key_main.k2': 'Hallo, ich bin Grzegorz.',
+      'cafe_order.c2': 'Kaffee.',
+      'k_desk.m2': 'Hallo Jana, es gibt Fehler im Vertrag. LG',
+      'dinner_main.dn8': 'Die Übersetzung ist schlecht.',
+    },
+    // Gleis 15 · skip ticket · forget WGB · "Die Übersetzung ist schlecht" · sign as-is
+    choice: { 'hbf_board.b3': 1, 'hbf_platforms.pl2': 0, 'hbf_platforms.pl2b': 0, 'hbf_pohl.p4c': 2, 'key_main.k9c': 3, 'k_kessler.rep_weak_c': 1, 'dinner_main.dn10': 2 },
+    fallback: 'Ja.',
+  };
+  const errors: string[] = [];
+  p.on('pageerror', (e) => errors.push(e.message));
+  const log: string[] = [];
+  await p.goto('/');
+  await p.evaluate(() => localStorage.clear());
+  await p.reload();
+  await p.click('[data-testid=new-game]');
+  await p.fill('[data-testid=first]', 'Anna');
+  await p.fill('[data-testid=last]', 'Kowalska');
+  await p.click('[data-testid=start]');
+  await p.click('[data-testid=skip]');
+  await settle(p, log, (s) => !!s.flags.intro_done, 'intro');
+  await p.click('[data-testid=hotspot-info]');
+  await settle(p, log, (s) => !!s.flags.talked_pohl, 'Pohl');
+  await p.click('[data-testid=hotspot-platforms]');
+  await settle(p, log, (s) => s.missions.m_platform?.status === 'completed' && !!s.flags.kb_arrived, 'detour');
+  let st = await state(p);
+  expect({ w: st.flags.wrong_train, l: st.flags.late, f: st.flags.fined, n: st.flags.no_ticket }).toEqual({ w: true, l: true, f: true, n: true });
+  await p.click('[data-testid=hotspot-house]');
+  await settle(p, log, (s) => s.missions.m_key?.status === 'completed', 'key');
+  expect((await state(p)).flags.no_wgb).toBe(true);
+  await p.click('[data-testid=hotspot-cafe]');
+  await settle(p, log, (s) => s.missions.m_call?.status === 'completed', 'cafe + call');
+  await travel(p, 'kanzlei');
+  await settle(p, log, (s) => !!s.flags.k_arrived, 'reception');
+  await p.click('[data-testid=hotspot-meeting]');
+  await settle(p, log, (s) => !!s.flags.briefed, 'briefing');
+  await p.click('[data-testid=hotspot-desk]');
+  await settle(p, log, (s) => !!s.flags.email_sent, 'desk');
+  await p.click('[data-testid=hotspot-meeting]');
+  await settle(p, log, (s) => s.missions.m_contract?.status === 'completed', 'contract');
+  await travel(p, 'restaurant');
+  await settle(p, log, (s) => !!s.flags.night_call_done, 'dinner');
+  st = await state(p);
+  expect(st.flags.dinner_overridden).toBe(true);
+  await p.click('[data-testid=hotspot-home]');
+  await settle(p, log, (s) => s.location === 'wohnung', 'home');
+  await p.click('[data-testid=hotspot-bed]');
+  await settle(p, log, (s) => s.day === 2, 'day 2');
+  await travel(p, 'amt');
+  await p.click('[data-testid=hotspot-counter]');
+  await settle(p, log, (s) => s.missions.m_amt?.status === 'completed', 'amt via e-mail detour');
+  st = await state(p);
+  expect(st.flags.amt_blocked).toBe(true);
+  expect(log.some((l) => /:(incorrect|understandable)$/.test(l))).toBe(true);
+  // weaker play earns clearly less XP than the clean run (> 500) but still progresses
+  expect(st.xp).toBeGreaterThan(0);
   expect(errors).toEqual([]);
   console.log(log.join('\n'));
 });

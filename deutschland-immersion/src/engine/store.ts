@@ -137,6 +137,7 @@ export interface Actions {
   startDialogue: (id: string, retrievalItem?: string) => void;
   enterNode: (nodeId: string) => void;
   endDialogue: () => void;
+  resolveNext: (node: DialogueNode) => string | null;
   chooseOption: (choice: Choice, node: DialogueNode) => void;
   submitEvaluation: (e: Evaluation, spec: FreeInputSpec, text: string, node: DialogueNode) => void;
   submitInspect: (spec: InspectSpec, marked: string[]) => { found: string[]; missed: string[]; wrong: string[] };
@@ -445,8 +446,12 @@ export const useGame = create<Store>()(
             const d = DIALOGUES[dlgId];
             const node = d?.nodes[id];
             if (!node) return get().endDialogue();
-            const hit = node.branch?.find((b) => checkCondition(b.condition, cond()));
+            // Pure routing nodes branch immediately; nodes with content show first and
+            // treat `branch` as a conditional `next` (see resolveNext).
+            const hasContent = !!(node.text || node.direction || node.document || node.choices || node.input || node.inspect || node.retrieval);
+            const hit = !hasContent ? node.branch?.find((b) => checkCondition(b.condition, cond())) : undefined;
             if (hit) {
+              if (node.effects?.length) get().applyEffects(node.effects, `${dlgId}.${id}`);
               id = hit.next;
               continue;
             }
@@ -482,6 +487,13 @@ export const useGame = create<Store>()(
             }
             return;
           }
+        },
+
+        resolveNext: (node) => {
+          const hit = node.branch?.find((b) => checkCondition(b.condition, cond()));
+          if (hit) return hit.next;
+          if (node.end || !node.next) return null;
+          return node.next;
         },
 
         endDialogue: () => {

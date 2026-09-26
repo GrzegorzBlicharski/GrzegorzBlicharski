@@ -35,7 +35,7 @@ export function Dialogue() {
   const settings = useGame((s) => s.settings);
   const rel = useGame((s) => s.rel);
   const pending = useGame((s) => s.ui.pending);
-  const { enterNode, endDialogue, chooseOption, submitEvaluation, revealSubtitle, useGloss, recordRetrievalChoice, recordRetrievalInput } = useGame.getState();
+  const { enterNode, endDialogue, resolveNext, chooseOption, submitEvaluation, revealSubtitle, useGloss, recordRetrievalChoice, recordRetrievalInput } = useGame.getState();
 
   const d = DIALOGUES[rt.id];
   const node: DialogueNode | undefined = d?.nodes[rt.node];
@@ -75,10 +75,13 @@ export function Dialogue() {
     if (!node || retrieval) return;
     const hasContent = node.text || node.direction || node.choices || node.input || node.document || node.inspect;
     if (!hasContent) {
-      const id = setTimeout(() => (node.end || !node.next ? endDialogue() : enterNode(node.next)), 60);
+      const id = setTimeout(() => {
+        const nx = resolveNext(node);
+        return nx ? enterNode(nx) : endDialogue();
+      }, 60);
       return () => clearTimeout(id);
     }
-  }, [node, retrieval, endDialogue, enterNode]);
+  }, [node, retrieval, endDialogue, enterNode, resolveNext]);
 
   const say = useCallback(
     (rateMul = 1) => {
@@ -117,13 +120,16 @@ export function Dialogue() {
       return enterNode(n);
     }
     if (evalState) {
-      if (evalState.next === null) return node.next ? enterNode(node.next) : endDialogue();
+      if (evalState.next === null) {
+        const nx = resolveNext(node);
+        return nx ? enterNode(nx) : endDialogue();
+      }
       return enterNode(evalState.next);
     }
     if (node.choices || node.input || node.inspect || retrieval) return;
-    if (node.end || !node.next) return endDialogue();
-    enterNode(node.next);
-  }, [node, flash, evalState, retrieval, enterNode, endDialogue]);
+    const nx = resolveNext(node);
+    return nx ? enterNode(nx) : endDialogue();
+  }, [node, flash, evalState, retrieval, enterNode, endDialogue, resolveNext]);
 
   const choose = useCallback(
     (c: Choice) => {
@@ -259,7 +265,7 @@ export function Dialogue() {
 
         {/* adaptive retrieval moment */}
         {retrieval && !evalState && retrieval.kind === 'choice' && (
-          <RetrievalChoices item={retrieval} onDone={(ok) => { recordRetrievalChoice(retrieval, ok); }} onContinue={() => (node.next ? enterNode(node.next) : endDialogue())} />
+          <RetrievalChoices item={retrieval} onDone={(ok) => { recordRetrievalChoice(retrieval, ok); }} onContinue={() => { const nx = resolveNext(node); return nx ? enterNode(nx) : endDialogue(); }} />
         )}
         {retrieval && !evalState && retrieval.kind === 'input' && <FreeInput key={retrieval.id} spec={retrievalSpec(retrieval)} onSubmit={(x) => onRetrievalSubmit(x)} busy={busy} />}
 
