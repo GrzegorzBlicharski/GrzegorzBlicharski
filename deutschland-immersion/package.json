@@ -1,0 +1,35 @@
+{
+  "name": "deutschland-immersion",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "DEUTSCHLAND: IMMERSION — a cinematic narrative RPG for learning German (B1 → C2 → legal German → PL↔DE translation).",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0",
+    "@fontsource/bebas-neue": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/playfair-display": "^5.3.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "zod": "^4.6.5",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "typescript": "5.9",
+    "vite": "^7.3.6",
+    "vitest": "^3.2.7"
+  }
+}
