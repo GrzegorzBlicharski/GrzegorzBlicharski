@@ -204,11 +204,13 @@
         th.appendChild(b);
       });
       phone.classList.add('on');
+      document.body.classList.add('phone-on');
       F.audio.paper();
       return new Promise((res) => {
         const close = (e) => {
           if (e && e.type === 'keydown' && e.key !== 'Escape' && e.key !== ' ' && e.key !== 'Enter') return;
           phone.classList.remove('on');
+          document.body.classList.remove('phone-on');
           document.removeEventListener('pointerdown', close, true);
           document.removeEventListener('keydown', close, true);
           setTimeout(() => { ui.modal = false; res(); }, 450);

@@ -252,3 +252,6 @@ body.veil.reveal .dlg-text .gloss::before, body.veil .dlg-text .gloss:hover::bef
 .ts-controw { margin-top: 56px; } .ts-controw + .ts-chapters { margin-top: 18px; }
 .ts-cont { text-align: center; width: 240px; }
 .career { position: fixed; inset: 0; z-index: 80; }
+/* while the phone is up (it sits bottom-right), subtitles and the objective move clear of it */
+body.phone-on .dlg-inner { left: calc(50% - 190px); width: min(820px, calc(100vw - 9vw - 420px)); }
+body.phone-on .objective { left: calc(50% - 190px); }
