@@ -610,6 +610,38 @@
   }
   G.Rain = Rain;
 
+  // ------------------------------------------------------------------ snow
+  class Snow {
+    constructor(n, o) {
+      this.o = Object.assign({ x0: -200, x1: 2120, y0: -100, y1: 1180, speed: 90, wind: 30, col: [235, 240, 250], alpha: 0.8, size: 2.6 }, o || {});
+      this.f = [];
+      for (let i = 0; i < n; i++) this.f.push(this.spawn(true));
+    }
+    spawn(init) {
+      const o = this.o, z = 0.25 + Math.random() * 0.75;
+      return { x: o.x0 + Math.random() * (o.x1 - o.x0), y: init ? o.y0 + Math.random() * (o.y1 - o.y0) : o.y0 - Math.random() * 60, z, ph: Math.random() * 10 };
+    }
+    update(dt, t) {
+      const o = this.o;
+      for (let i = 0; i < this.f.length; i++) {
+        const p = this.f[i];
+        p.y += o.speed * (0.4 + p.z) * dt;
+        p.x += (o.wind * p.z + Math.sin(t * 0.8 + p.ph) * 18) * dt;
+        if (p.y > o.y1 || p.x > o.x1 + 50) this.f[i] = this.spawn(false);
+      }
+    }
+    draw(g, mul) {
+      const o = this.o;
+      mul = mul == null ? 1 : mul;
+      for (const p of this.f) {
+        const r = o.size * (0.4 + p.z * 1.1);
+        g.fillStyle = U.rgba(o.col, o.alpha * mul * (0.3 + p.z * 0.7));
+        g.beginPath(); g.arc(p.x, p.y, r, 0, U.TAU); g.fill();
+      }
+    }
+  }
+  G.Snow = Snow;
+
   // ------------------------------------------------------------------ glass droplets
   class GlassDrops {
     constructor(rects, o) {

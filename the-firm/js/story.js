@@ -21,28 +21,38 @@
   // ================================================================== TITLE
   story.title = () => {
     F.go('void', { cut: true, holdBlack: true });
-    const hasSave = F.loadSave() && S.stage && S.stage !== 'arrive';
+    const saved = F.loadSave();
+    const canContinue = saved && ((S.chapter === 2) || (S.stage && S.stage !== 'arrive'));
     const t = F.el('div', 'title-screen', `
       <div class="ts-mark"></div>
       <div class="ts-title">THE FIRM</div>
-      <div class="ts-sub">Chapter I · The Carbo Deal</div>
-      <div class="ts-begin">${hasSave ? 'Click to continue' : 'Click to begin'}</div>
-      ${hasSave ? '<button class="ts-new">New game</button>' : ''}
+      <div class="ts-sub">Gliwice · Wrocław · Stuttgart</div>
+      <div class="ts-chapters">
+        ${canContinue ? `<button class="ts-ch ts-cont" data-a="continue"><i>Continue</i><b>Chapter ${S.chapter === 2 ? 'II' : 'I'}</b></button>` : ''}
+        <button class="ts-ch" data-a="1"><i>Chapter I</i><b>The Carbo Deal</b><span>Gliwice → Wrocław · M&amp;A, football, legal German</span></button>
+        <button class="ts-ch" data-a="2"><i>Chapter II</i><b>The Line Stops</b><span>Gliwice ↔ Stuttgart · CISG, jurisdiction, negotiating in German</span></button>
+      </div>
       <div class="ts-note">Headphones recommended · Mouse &amp; keyboard · Tab recalls your objective</div>`);
     document.body.appendChild(t);
     let started = false;
-    const begin = (fresh) => {
-      if (started) return; started = true;
+    t.addEventListener('pointerdown', (e) => {
+      const btn = e.target.closest('.ts-ch');
+      if (!btn || started) return;
+      started = true;
       F.audio.init();
       t.classList.add('out');
       setTimeout(() => t.remove(), 1500);
-      if (fresh || !hasSave) { F.resetSave(); Object.assign(S, { flags: {}, trust: { wendt: 0, jonas: 0, marta: 0, steinhauer: 0 }, findings: {}, redlines: {}, links: {}, readMail: {}, readDocs: {}, stage: 'arrive', time: '07:12' }); story.opening(); }
-      else story.resume();
-    };
-    t.addEventListener('pointerdown', (e) => { if (e.target.classList.contains('ts-new')) begin(true); else begin(false); });
+      const a = btn.dataset.a;
+      if (a === 'continue') return story.resume();
+      const keepTrust = S.trust;
+      F.resetSave();
+      Object.assign(S, { chapter: 1, flags: {}, trust: keepTrust || { wendt: 0, jonas: 0, marta: 0, steinhauer: 0 }, findings: {}, redlines: {}, links: {}, readMail: {}, readDocs: {}, stage: 'arrive', time: '07:12', german: {}, ch2: { memo: {} } });
+      if (a === '2') F.story2.start(); else story.opening();
+    });
   };
 
   story.resume = () => {
+    if (S.chapter === 2) return F.story2.resume();
     const st = S.stage;
     if (st === 'review') return story.officeReview();
     if (st === 'evening') return story.officeEvening();
@@ -97,6 +107,7 @@
 
   // office interactions (dispatch by stage)
   F.on('office:phone', async () => {
+    if (S.chapter === 2) return;
     const sc = scene();
     if (S.stage === 'arrive') {
       await ui.phone.open('Albrecht', 'Office of Dr. Helena Wendt', [{ text: 'Guten Morgen, and welcome to Adler Wendt.', time: '07:18' }, { text: 'Partner wants you upstairs.', time: '07:19' }, { text: '23rd floor. The stairs by the window.', time: '07:19' }], '07:20');
@@ -112,11 +123,13 @@
   F.on('office:computer', () => F.openComputer());
   F.on('computer:closed', () => { if (scene() && scene().name === 'office') { scene().monitorText = S.stage === 'evening' ? 'doc' : 'login'; } });
   F.on('office:coffee', () => {
+    if (S.chapter === 2) return;
     const lines = ['Machine coffee. Bitter enough to count as a decision.', 'Still hot. The only thing on this floor that hasn’t been negotiated.', 'Cold now. You didn’t notice when that happened.'];
     F.audio.tone(200, 0.2, 0.02);
     narr(lines[S.stage === 'evening' ? 2 : (F.time | 0) % 2]).then(() => ui.dialogueClose());
   });
   F.on('office:window', async () => {
+    if (S.chapter === 2) return;
     F.inputLocked = true;
     await F.camTween({ x: 900, y: 420, z: 1.45 }, 1.4);
     if (S.stage === 'evening') await narr('Gliwice after dark. The radio tower’s red light, the ring road, somewhere a late bus. People are going home.');
@@ -126,18 +139,21 @@
     F.inputLocked = false;
   });
   F.on('office:file', async () => {
+    if (S.chapter === 2) return;
     if (S.stage === 'arrive') { await narr('A sealed folder. PROJEKT CARBO — ŚCIŚLE POUFNE · STRENG VERTRAULICH. Not yours to open. Not yet.'); ui.dialogueClose(); return; }
     const sent = await F.openRedline();
     if (sent) F.emit('redline:sent');
   });
   F.on('office:stairs', async () => {
+    if (S.chapter === 2) return;
     if (S.stage === 'arrive') {
       if (!F.flag('readMsg')) { await narr('Floor 10 is partner floor. Nobody goes up there uninvited. Your phone buzzed a moment ago.'); ui.dialogueClose(); return; }
       story.partner();
     } else { await narr(S.stage === 'evening' ? 'The partner floor is dark. Dr. Wendt left at six. Her light is still on.' : 'She said by five. Going back up empty-handed is not a plan.'); ui.dialogueClose(); }
   });
-  F.on('office:jonas', () => story.jonas());
+  F.on('office:jonas', () => { if (S.chapter !== 2) story.jonas(); });
   F.on('office:jonasEve', async () => {
+    if (S.chapter === 2) return;
     F.inputLocked = true;
     await F.camTween({ x: 560, y: 420, z: 1.9 }, 1.4);
     if (!F.flag('jonasEveTalk')) {
@@ -155,6 +171,7 @@
     F.inputLocked = false;
   });
   F.on('office:board', async () => {
+    if (S.chapter === 2) return;
     await F.openBoard();
     if (F.flag('boardSolved') && !F.flag('martaCalled')) story.martaCall();
   });
@@ -249,7 +266,7 @@
     F.inputLocked = false;
   };
 
-  F.on('redline:sent', () => story.timeLapse());
+  F.on('redline:sent', () => { if (S.chapter !== 2) story.timeLapse(); });
 
   story.timeLapse = async () => {
     if (S.stage !== 'review') return;
@@ -509,7 +526,7 @@
     F.audio.mix({ rain: 0.3, pad: 0.45 }, 3);
     F.audio.chord(outcome && outcome.startsWith('protected') ? 'resolve' : 'night');
     const r = F.scoreRedline();
-    const ev = Object.keys(F.EVIDENCE).filter((k) => S.findings[k]).length;
+    const ev = Object.keys(F.EVIDENCE).filter((k) => !F.EVIDENCE[k].ch && S.findings[k]).length;
     const epi = {
       protected: 'The Carbo deal signs at 10:14. Six months later, the City of Gliwice consents to the lease. The TV money arrives on time.',
       'protected-lease': 'The Carbo deal signs at 10:14. In March, the City of Gliwice opens a review of the stadium lease. Nobody at Adler Wendt is surprised.',
@@ -527,7 +544,7 @@
         <div class="ce-file">
           <div><span>Outcome</span><b>${verdict}</b></div>
           <div><span>Redline</span><b>${r.right} of ${F.SPA.length} clauses called right${r.ok ? ` · ${r.ok} flagged` : ''}</b></div>
-          <div><span>Evidence</span><b>${ev} of ${Object.keys(F.EVIDENCE).length} passages found</b></div>
+          <div><span>Evidence</span><b>${ev} of ${Object.keys(F.EVIDENCE).filter((k) => !F.EVIDENCE[k].ch).length} passages found</b></div>
           <div><span>Case board</span><b>${F.boardLinksCount()} connections</b></div>
         </div>
         <button class="ce-btn ce-notes-btn">Practice notes</button>
@@ -541,10 +558,11 @@
         <div class="ce-road">${F.curriculum.CHAPTERS.slice(1, 7).map((c) => `<div><em>${c.n}</em><b>${c.title}</b><span>${c.where}</span></div>`).join('')}<div class="more"><em>…</em><b>XIV · Your Name on the Door</b><span>Gliwice</span></div></div>
         <div class="ce-next"><i>Next</i> Chapter II · <b>The Line Stops</b> · Gliwice ↔ Stuttgart</div>
         <div class="ce-tease">A German manufacturer stops its line and blames your Silesian supplier. €18 million. German law, Polish documents, English emails — and Dr. Kraus has asked for you by name.</div>
-        <button class="ce-btn ce-title-btn">Return to title</button>
+        <button class="ce-btn ce-next-btn">Continue to Chapter II</button> <button class="ce-btn ce-title-btn">Return to title</button>
       </div>`);
     await F.fx.fade(0, 1600);
     p.node.querySelector('.ce-notes-btn').addEventListener('pointerdown', (e) => { e.stopPropagation(); F.audio.paper(); p.node.classList.add('show-notes'); });
+    p.node.querySelector('.ce-next-btn').addEventListener('pointerdown', (e) => { e.stopPropagation(); p.close(); F.story2.start(); });
     p.node.querySelector('.ce-title-btn').addEventListener('pointerdown', (e) => {
       e.stopPropagation();
       F.resetSave();

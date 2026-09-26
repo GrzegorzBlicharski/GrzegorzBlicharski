@@ -11,6 +11,12 @@ For the best experience: large window, headphones.
 
 Controls: mouse for everything · Space/Enter to advance dialogue · 1–3 to pick answers · Esc to put documents down · Tab to recall your objective.
 
+## What's in Chapter II — The Line Stops
+- January, snow in Gliwice. A Stuttgart drivetrain maker stops its line and blames your client's die-cast housings: €18.4m.
+- A matter file in German, Polish and English: framework supply agreement, quality agreement, both sides' standard terms, an engineering change notice, the engineers' emails, an X-ray report, the defect notice and the claim letter.
+- Write a Stellungnahme: which law, which court, what the contract says, how far liability goes, what the client should do — each answer cited to a document.
+- Fly to Stuttgart and present your position to German counsel in German, in a room above the stopped line. Arguments are only available if you found the document behind them.
+
 ## What's in Chapter I
 - Opening cinematic: Gliwice in the rain → the tower → the lobby → a glass elevator to the 9th floor.
 - Your desk as the interface: workstation, phone, case file, coffee, the window, the stairs to the partner floor.
@@ -34,7 +40,9 @@ js/scenes/*.js      Gliwice exteriors, lobby & elevator, office, partner office,
 js/documents.js     document viewer, evidence, SPA redline
 js/computer.js      the workstation (mail, documents, data room, calendar, research)
 js/board.js         case board
-js/story.js         Chapter I direction and dialogue
+js/story.js         Chapter I direction and dialogue (and the title screen)
+js/story2.js        Chapter II direction and dialogue
+js/documents2.js    Chapter II matter file, evidence and the Stellungnahme
 docs/VISUAL_BIBLE.md art direction rules
 docs/CURRICULUM.md  learning architecture: tiers, stages, tracks, source policy, chapter roadmap
 docs/WORLD.md       cities, corridors, travel, seasons
@@ -42,4 +50,4 @@ js/curriculum.js    tracks / stages / chapters / practice notes (data)
 tools/              screenshot & scripted-playthrough helpers (Playwright)
 ```
 
-Developer jumps: `index.html?scene=office&mode=evening`, `index.html?story=partner`, `index.html?story=negotiation&findall=1`.
+Developer jumps: `index.html?scene=office&mode=winter`, `index.html?scene=vk_room`, `index.html?scene=office&mode=evening`, `index.html?story=partner`, `index.html?story=negotiation&findall=1`.

@@ -56,7 +56,7 @@
 
   // ------------------------------------------------------------------ GLIWICE ESTABLISHING — 07:12, rain
   F.defineScene('city_wide', {
-    enter() {
+    enter(o) {
       const q = F.quality();
       this.clouds = G.cloudTexture(VW * 2.2, 700, 4, { n: 260, col: [150, 160, 176], a: 0.16, rmin: 80, rmax: 280 });
       this.clouds2 = G.cloudTexture(VW * 2.2, 500, 9, { n: 180, col: [40, 46, 58], a: 0.35, rmin: 100, rmax: 260 });
@@ -87,12 +87,15 @@
       this.hq = F.offscreen(260, 900, q, (g) => hqFar(g, 60, 880, 120, 470, { glassL: [70, 84, 104], glassM: [34, 42, 56], glassR: [14, 17, 23], edge: [180, 200, 230], lit: 0.3 }));
       this.rain = new G.Rain(900, { angle: 0.14, speed: 1500, len: 44, alpha: 0.22, col: [190, 200, 215] });
       this.rainNear = new G.Rain(120, { angle: 0.16, speed: 2300, len: 110, alpha: 0.16, zmin: 0.7, col: [210, 220, 235] });
+      this.snowing = !!(o && o.snow);
+      if (this.snowing) { this.snow = new G.Snow(900, { speed: 70, wind: 40, size: 2.2 }); this.snowNear = new G.Snow(70, { speed: 150, wind: 70, size: 5, alpha: 0.6 }); }
       F.camSet(VW / 2 - 60, VH / 2 + 10, 1.0);
       F.cam.par = 14; F.cam.drift = 0.6;
       F.grade.tint = [70, 100, 140]; F.grade.tintA = 0.35; F.grade.vignette = 0.6; F.grade.grain = 0.08;
       this.flash = 0;
     },
     update(dt, t) {
+      if (this.snowing) { this.snow.update(dt, t); this.snowNear.update(dt, t); return; }
       this.rain.update(dt); this.rainNear.update(dt);
       if (Math.random() < dt * 0.05) { F.grade.flash = 0.25; F.audio.thunder(0.8); }
     },
@@ -137,8 +140,7 @@
       G.glow(g, 1500, 1060, 420, [255, 160, 90], 0.14);
       // rain
       F.screen();
-      this.rain.draw(g);
-      this.rainNear.draw(g);
+      if (this.snowing) { this.snow.draw(g); this.snowNear.draw(g, 0.7); } else { this.rain.draw(g); this.rainNear.draw(g); }
       // low mist
       const mist = g.createLinearGradient(0, 820, 0, 1080);
       mist.addColorStop(0, 'rgba(90,98,112,0)'); mist.addColorStop(1, 'rgba(40,46,56,0.35)');

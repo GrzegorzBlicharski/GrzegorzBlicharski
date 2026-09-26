@@ -37,7 +37,7 @@
   const CHAPTERS = [
     { n: 'I', title: 'The Carbo Deal', where: 'Gliwice → Wrocław', stage: 1, status: 'playable', tracks: ['contracts', 'commercial', 'football', 'negotiation', 'plde', 'german'],
       brief: 'A Stuttgart investor buys a Gliwice football club. The warranty, the disclosure letter and the liability cap only fail together.' },
-    { n: 'II', title: 'The Line Stops', where: 'Gliwice ↔ Stuttgart', stage: 2, tracks: ['contracts', 'plde', 'german', 'litigation'],
+    { n: 'II', title: 'The Line Stops', where: 'Gliwice ↔ Stuttgart', stage: 2, status: 'playable', tracks: ['contracts', 'plde', 'german', 'litigation'],
       brief: 'A German manufacturer stops production and blames your Polish supplier. €18 million, German law, Polish documents, English emails. Which law, which court, which clause?' },
     { n: 'III', title: 'Eighty Positions', where: 'Gliwice · winter', stage: 3, tracks: ['employment', 'advisory'],
       brief: 'An industrial client restructures eighty jobs and wants its operations director out by Friday. Advise the employer — then face the employee’s counsel.' },
@@ -88,5 +88,29 @@
     ];
   }
 
-  F.curriculum = { TRACKS, STAGES, CHAPTERS, chapterOneNotes };
+  function chapterTwoNotes(S) {
+    const M = (S.ch2 && S.ch2.memo) || {}, c2 = S.ch2 || {};
+    const ok = (id) => { const Q = F.MEMO2.find((q) => q.id === id); const a = M[id]; return !!(Q && a && Q.opts[a.opt] && Q.opts[a.opt].ok); };
+    const sc = F.scoreMemo();
+    return [
+      { track: 'plde', ok: ok('law'), t: '“German law” includes the CISG',
+        d: 'Between two contracting states, a choice of German law brings in the UN Sales Convention unless it is excluded expressly. BGB and HGB only fill the gaps.' },
+      { track: 'plde', ok: ok('forum'), t: 'Forum when the standard terms collide',
+        d: 'Conflicting forum clauses usually mean no art. 25 agreement. Brussels I bis then gives the defendant’s domicile (art. 4) and the place of delivery (art. 7(1)(b)) — which an Incoterm like FCA Gliwice can fix.' },
+      { track: 'contracts', ok: ok('notice'), t: 'The notice trap — three systems, one logic',
+        d: 'CISG arts. 38–39, HGB §377 and art. 563 §2 KC all punish late inspection and notice. In automotive, the quality agreement narrows the inspection duty — read it before arguing “too late”.' },
+      { track: 'contracts', ok: ok('liab'), t: 'Strict liability, caps and causation',
+        d: 'CISG liability doesn’t need fault, but the contract can cap it, a standard-term cap is tested under §307 BGB, damages must be foreseeable (art. 74), and a buyer can’t rely on a failure it caused (art. 80).' },
+      { track: 'advisory', ok: c2.outcome === 'settled', t: 'Win the way the client needs',
+        d: 'With 41% of revenue at stake, the goal was a working supply relationship with a capped, evidence-based settlement — not a judgment in 2029.' },
+      { track: 'advisory', ok: sc.cited >= 4, t: 'Cite the document for every answer',
+        d: 'An opinion without a source is a guess with a letterhead. Every answer in the Stellungnahme should point to the clause, the email or the report.' },
+      { track: 'german', ok: (c2.cred || 0) >= 2, t: 'Legal German — presenting a position',
+        d: 'Short sentences: the document, the article, the consequence. “Darüber ließe sich streiten” from the other side means the point landed.' },
+      { track: 'advisory', ok: !S.flags.c2authority && c2.call !== 2, t: 'Authority and early advice',
+        d: 'Never offer or commit the client’s money without instructions, and never reassure before you have read the documents.' },
+    ];
+  }
+
+  F.curriculum = { TRACKS, STAGES, CHAPTERS, chapterOneNotes, chapterTwoNotes };
 })(window.F);

@@ -220,7 +220,7 @@
     const p = F.ui.panel('docview', `
       <div class="dv-dim"></div>
       <div class="dv-top"><span class="dv-folder">${d.folder}</span><span class="dv-title">${d.title}</span>
-        ${d.lang ? '<button class="dv-lang"><b>PL</b> / EN</button>' : ''}
+        ${d.lang ? `<button class="dv-lang"><b>${(d.langs || ['PL'])[0]}</b> / EN</button>` : ''}
         <button class="dv-close">Put down <kbd>Esc</kbd></button></div>
       <div class="dv-scroll"><div class="paper kind-${d.kind}"><div class="paper-inner"></div></div></div>
       <div class="dv-hint">Click passages that matter — they go to the case board.</div>`);
@@ -229,7 +229,7 @@
     render();
     F.audio.paper();
     const lb = p.node.querySelector('.dv-lang');
-    if (lb) lb.addEventListener('pointerdown', (e) => { e.stopPropagation(); lang = lang === 'pl' ? 'en' : 'pl'; lb.innerHTML = lang === 'pl' ? '<b>PL</b> / EN' : 'PL / <b>EN</b>'; inner.parentElement.classList.add('flip'); setTimeout(() => { render(); inner.parentElement.classList.remove('flip'); }, 220); F.audio.paper(); });
+    if (lb) lb.addEventListener('pointerdown', (e) => { e.stopPropagation(); lang = lang === 'pl' ? 'en' : 'pl'; const L0 = (d.langs || ['PL'])[0]; lb.innerHTML = lang === 'pl' ? `<b>${L0}</b> / EN` : `${L0} / <b>EN</b>`; inner.parentElement.classList.add('flip'); setTimeout(() => { render(); inner.parentElement.classList.remove('flip'); }, 220); F.audio.paper(); });
     const close = () => { F.off('key', onKey); p.close(); F.audio.paper(); setTimeout(res, 300); };
     const onKey = (e) => { if (e.key === 'Escape') close(); };
     F.on('key', onKey);

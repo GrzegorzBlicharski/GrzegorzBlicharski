@@ -4,7 +4,7 @@
 
 Every design decision answers one question: *does this materially contribute to that profile?* If yes, go deep. If no, teach only what broad professional competence needs.
 
-> Status: **Chapter I is playable.** Everything else below is the designed roadmap. The data model lives in `js/curriculum.js` (tracks, tiers, stages, chapters, practice notes) so new chapters plug into the same system.
+> Status: **Chapters I and II are playable.** Everything else below is the designed roadmap. The data model lives in `js/curriculum.js` (tracks, tiers, stages, chapters, practice notes) so new chapters plug into the same system.
 
 ---
 
@@ -75,7 +75,7 @@ Client acquisition and retention, positioning and specialisation, networking and
 | # | Chapter | Where | Stage | Core tracks |
 |---|---|---|---|---|
 | I | **The Carbo Deal** *(playable)* | Gliwice → Wrocław | 1→2 | contracts, M&A fundamentals, football business, negotiation, PL–DE, legal German |
-| II | The Line Stops | Gliwice ↔ Stuttgart | 2 | supply contract, quality dispute, applicable law & forum, German law, Vertragsprüfung |
+| II | **The Line Stops** *(playable)* | Gliwice ↔ Stuttgart | 2 | supply contract, quality dispute, applicable law & forum, German law, Vertragsprüfung |
 | III | Eighty Positions | Gliwice · winter | 3 | Polish employment: restructuring, executive dismissal, protected employees |
 | IV | Oder Crossing | Szczecin ↔ Berlin | 3 | cross-border employment, applicable law for employment contracts |
 | V | Fair Trade | Poznań ↔ Berlin | 4 | distribution vs agency, termination, compensation |
@@ -98,3 +98,13 @@ Client acquisition and retention, positioning and specialisation, networking and
 - Remedies in negotiation: specific indemnity, escrow, CP, price reduction, walk-away.
 - Legal German: first written advice to a German in-house lawyer (register + substance); German client in negotiation.
 - Forum choice in a PL–DE deal (German vs Polish arbitration institution).
+
+## 8. What Chapter II trains (implemented)
+- **Which law?** A choice of “German law” between two CISG states brings in the CISG unless expressly excluded (art. 6); BGB/HGB fill gaps.
+- **Which court?** Conflicting forum clauses in both sides’ standard terms → likely no art. 25 agreement; Brussels I bis art. 4 (defendant’s domicile) and art. 7(1)(b) (place of delivery, fixed by FCA Gliwice; CJEU Car Trim C-381/08, Electrosteel C-87/10).
+- **What does the contract say?** The QSV narrows incoming inspection, so the “late notice” defence is a trap; comparison of CISG arts. 38–39, HGB §377 and art. 563 §2 KC.
+- **Liability architecture:** strict CISG liability (art. 79 exemption only) × contractual cap (§307 BGB check if a standard term; gross negligence carve-out) × the buyer’s own causal contribution (art. 80) × foreseeability of the OEM penalty (art. 74).
+- **Engineering change control:** an ECN that waives re-sampling against a written warning.
+- **Client advisory:** revenue concentration (41%) decides the strategy; never commit client money without instructions; no early reassurance.
+- **Legal German, oral:** presenting a position to German opposing counsel; register (Frau Kollegin, kollegiale Grüße); arguments are only available if the supporting document was found.
+- **Work product:** a Stellungnahme answering five questions, each cited to a document; the partner debriefs every miss on the flight.

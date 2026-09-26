@@ -15,6 +15,12 @@
       amb: [70, 80, 98], key: [205, 220, 245], rim: [170, 195, 235], tint: [80, 110, 150], tintA: 0.28, lampA: 0.85,
       winLit: 0.14, reflA: 0.05, desk: ['#2a2420', '#15110e'],
     },
+    winter: {
+      sky: ['#1a1f29', '#3e4654', '#7d838c', '#a9a8a6'], cloud: [190, 196, 206], cityBody: [44, 50, 60],
+      ceil: '#1b1e23', wall: '#282c33', floor: ['#1d2026', '#0e1013'], ceilLight: [230, 238, 250], ceilA: 0.6,
+      amb: [78, 86, 102], key: [215, 226, 245], rim: [200, 215, 240], tint: [90, 120, 160], tintA: 0.3, lampA: 0.9,
+      winLit: 0.16, reflA: 0.05, desk: ['#2a2521', '#15110e'],
+    },
     evening: {
       sky: ['#05070b', '#0b1019', '#1a1c26', '#3a2e2c'], cloud: [130, 96, 76], cityBody: [16, 19, 26],
       ceil: '#14110e', wall: '#231d18', floor: ['#1a1613', '#0a0908'], ceilLight: [255, 214, 160], ceilA: 0.35,
@@ -35,12 +41,14 @@
       this.clouds = G.cloudTexture(VW * 2.2, 600, eve ? 12 : 4, { n: 220, col: L.cloud, a: eve ? 0.14 : 0.16, rmin: 80, rmax: 260 });
       const body = (k) => U.rgba(U.mix(L.cityBody, eve ? [8, 10, 14] : [90, 96, 108], k), 1);
       this.far = G.skyline({ w: VW + 800, h: 1000, base: 520, seed: 21, minW: 26, maxW: 80, minH: 8, maxH: 44, gap: 10, pitched: 0.6, body: body(0.55), fog: eve ? [26, 30, 40] : [100, 106, 118], fogBottom: 0.45, fogTop: 0.3, win: Object.assign({}, win, { lit: L.winLit * 0.6 }), landmarks: [G.lm.radioTower(1180, 300, body(0.5), 0.95, []), G.lm.headframe(1560, 150, body(0.55), win, 0.8)], below: body(0.6), q: q * 0.6 });
-      this.mid = G.skyline({ w: VW + 800, h: 1000, base: 590, seed: 33, minW: 30, maxW: 95, minH: 20, maxH: 90, gap: 8, pitched: 0.75, body: body(0.3), edge: eve ? 'rgba(90,100,120,0.2)' : 'rgba(150,160,175,0.22)', fog: eve ? [20, 24, 32] : [84, 90, 102], fogBottom: 0.35, win, landmarks: [G.lm.townHall(1240, 150, body(0.3), 1.05), G.lm.church(1560, 90, body(0.3), 0.9), G.lm.church(1780, 80, body(0.3), 0.9)], groundGlow: [255, 170, 90], groundGlowA: eve ? 0.45 : 0.25, below: body(0.35), q: q * 0.7 });
-      this.near = G.skyline({ w: VW + 900, h: 1100, base: 700, seed: 47, minW: 60, maxW: 170, minH: 30, maxH: 150, gap: 30, pitched: 0.8, body: body(0), edge: 'rgba(120,130,150,0.25)', win: Object.assign({}, win, { lit: L.winLit * 1.4, cw: 5, ch: 6, gx: 6, gy: 7, wa: 0.9 }), groundGlow: [255, 160, 80], groundGlowA: eve ? 0.5 : 0.3, below: body(0.05), q: q * 0.75 });
+      this.mid = G.skyline({ w: VW + 800, h: 1000, base: 590, seed: 33, minW: 30, maxW: 95, minH: 20, maxH: 90, gap: 8, pitched: 0.75, body: body(0.3), edge: eve ? 'rgba(90,100,120,0.2)' : this.mode === 'winter' ? 'rgba(236,240,248,0.7)' : 'rgba(150,160,175,0.22)', fog: eve ? [20, 24, 32] : [84, 90, 102], fogBottom: 0.35, win, landmarks: [G.lm.townHall(1240, 150, body(0.3), 1.05), G.lm.church(1560, 90, body(0.3), 0.9), G.lm.church(1780, 80, body(0.3), 0.9)], groundGlow: [255, 170, 90], groundGlowA: eve ? 0.45 : 0.25, below: body(0.35), q: q * 0.7 });
+      this.near = G.skyline({ w: VW + 900, h: 1100, base: 700, seed: 47, minW: 60, maxW: 170, minH: 30, maxH: 150, gap: 30, pitched: 0.8, body: body(0), edge: this.mode === 'winter' ? 'rgba(236,240,248,0.8)' : 'rgba(120,130,150,0.25)', win: Object.assign({}, win, { lit: L.winLit * 1.4, cw: 5, ch: 6, gx: 6, gy: 7, wa: 0.9 }), groundGlow: [255, 160, 80], groundGlowA: eve ? 0.5 : 0.3, below: body(0.05), q: q * 0.75 });
       this.lights = [];
       this.room = F.offscreen(VW + 500, VH + 300, q, (g) => { g.translate(250, 150); paintRoom(g, L, eve); });
       this.desk = F.offscreen(VW + 600, 520, q, (g) => { g.translate(300, 0); paintDesk(g, L, eve, F.state); });
       this.glass = new G.GlassDrops([{ x: WIN.x0, y: WIN.y0, w: WIN.x1 - WIN.x0, h: WIN.y1 - WIN.y0 }], { beads: 1500, drips: 18, light: eve ? [150, 160, 190] : [205, 215, 232], dark: [8, 10, 16], seed: 31, scale: 0.9 });
+      this.winter = this.mode === 'winter';
+      if (this.winter) this.snow = new G.Snow(420, { x0: WIN.x0 - 200, x1: WIN.x1 + 100, y0: WIN.y0 - 60, y1: WIN.y1 + 20, speed: 70, wind: 40, size: 2.2 });
       this.rain = new G.Rain(eve ? 500 : 650, { angle: 0.13, speed: 1300, len: 34, alpha: eve ? 0.12 : 0.18, x0: WIN.x0 - 200, x1: WIN.x1 + 200, y0: WIN.y0 - 100, y1: WIN.y1 + 40, col: eve ? [140, 150, 175] : [200, 210, 225] });
       F.camSet(VW / 2, VH / 2, 1.0);
       F.cam.par = 26; F.cam.drift = 0.7;
@@ -51,10 +59,10 @@
       this.phoneLit = 0;
       this.phoneText = null;
       this.hoverA = {};
-      this.jonas = this.mode === 'morning' && !F.flag('jonasLeft');
+      this.jonas = (this.mode === 'morning' && !F.flag('jonasLeft')) || this.mode === 'winter';
       this.monitorText = eve ? 'doc' : 'login';
       this.buildHotspots();
-      F.audio.mix(eve ? { rain: 0.1, rainGlass: 0.14, room: 0.28, hvac: 0.1, city: 0.08, pad: 0.4 } : { rain: 0.14, rainGlass: 0.2, room: 0.25, hvac: 0.12, city: 0.1, pad: 0.35 }, 2.5);
+      if (this.winter) F.audio.mix({ city: 0.12, room: 0.25, hvac: 0.16, pad: 0.35 }, 2.5); else F.audio.mix(eve ? { rain: 0.1, rainGlass: 0.14, room: 0.28, hvac: 0.1, city: 0.08, pad: 0.4 } : { rain: 0.14, rainGlass: 0.2, room: 0.25, hvac: 0.12, city: 0.1, pad: 0.35 }, 2.5);
       F.audio.chord(eve ? 'warm' : 'dm');
     },
     buildHotspots() {
@@ -75,7 +83,7 @@
       }
     },
     // cinematic arrival: sit down, monitor wakes, phone buzzes
-    async arrive() {
+    async arrive(who, text) {
       F.inputLocked = true;
       await F.wait(600);
       this.sitTween = { from: 0, to: 1, t: 0, dur: 2.6 };
@@ -86,7 +94,7 @@
       this.wake = { t: 0 };
       F.audio.tone(660, 0.3, 0.02); F.audio.tone(990, 0.4, 0.015, 'sine', 0.12);
       await F.wait(2600);
-      this.buzz('Albrecht · Office Dr. Wendt', 'Partner wants you upstairs.');
+      this.buzz(who || 'Albrecht · Office Dr. Wendt', text || 'Partner wants you upstairs.');
       await F.wait(1800);
       F.inputLocked = false;
     },
@@ -98,6 +106,7 @@
     },
     update(dt, t) {
       this.glass.update(dt); this.rain.update(dt);
+      if (this.snow) this.snow.update(dt, t);
       if (this.sitTween) {
         const s = this.sitTween; s.t += dt;
         this.sit = U.easeInOut(U.clamp(s.t / s.dur, 0, 1));
@@ -131,13 +140,26 @@
       F.layer(D_ROOM);
       g.save();
       g.beginPath(); g.rect(WIN.x0, WIN.y0, WIN.x1 - WIN.x0, WIN.y1 - WIN.y0); g.clip();
-      this.rain.draw(g);
+      if (this.snow) this.snow.draw(g); else this.rain.draw(g);
       // glass: tint + interior reflections (stronger at night)
       g.fillStyle = eve ? 'rgba(10,12,18,0.25)' : 'rgba(30,40,56,0.12)';
       g.fillRect(WIN.x0, WIN.y0, WIN.x1 - WIN.x0, WIN.y1 - WIN.y0);
       paintReflections(g, L, eve, t);
-      this.glass.draw(g, eve ? 0.7 : 0.9);
+      if (this.winter) {
+        // frost creeping in from the pane corners
+        for (let k = 0; k <= 10; k++) {
+          const x = WIN.x0 + ((WIN.x1 - WIN.x0) * k) / 10;
+          [WIN.y0, WIN.y1].forEach((y) => { const fg = g.createRadialGradient(x, y, 0, x, y, 90); fg.addColorStop(0, 'rgba(225,235,248,0.28)'); fg.addColorStop(1, 'rgba(225,235,248,0)'); g.fillStyle = fg; g.fillRect(x - 90, y - 90, 180, 180); });
+        }
+      } else this.glass.draw(g, eve ? 0.7 : 0.9);
       g.restore();
+      if (this.winter) {
+        // snow on the outside ledge
+        g.fillStyle = 'rgba(232,238,246,0.85)';
+        g.beginPath(); g.moveTo(WIN.x0, WIN.y1 - 2);
+        for (let x = WIN.x0; x <= WIN.x1; x += 30) g.lineTo(x, WIN.y1 - 6 - Math.sin(x * 0.05) * 2.5 - ((x * 7) % 5));
+        g.lineTo(WIN.x1, WIN.y1 + 2); g.lineTo(WIN.x0, WIN.y1 + 2); g.closePath(); g.fill();
+      }
       // ---------------- room
       g.drawImage(this.room, -250, -150, this.room.vw, this.room.vh);
       // live room lights: blinking standby LEDs, monitor flicker in the rows
@@ -246,10 +268,11 @@
           g.fillStyle = 'rgba(40,52,70,0.95)';
           G.quad(g, [[1070, 924], [1128, 924], [1132, 958], [1067, 958]], 'rgba(46,58,78,0.95)');
           g.fillStyle = '#fff'; g.font = '600 7px Inter, sans-serif'; g.textAlign = 'left';
-          g.fillText('ALBRECHT', 1073, 934);
+          g.fillText(this.phoneText.who.split(' ')[0].toUpperCase(), 1073, 934);
           g.fillStyle = 'rgba(255,255,255,0.85)'; g.font = '400 6.5px Inter, sans-serif';
-          g.fillText('Partner wants you', 1073, 944);
-          g.fillText('upstairs.', 1073, 953);
+          const words = this.phoneText.text.split(' '), half = Math.ceil(words.length / 2);
+          g.fillText(words.slice(0, half).join(' '), 1073, 944);
+          g.fillText(words.slice(half).join(' '), 1073, 953);
         }
         g.globalAlpha = 1;
         G.glow(g, 1098, 950, 150, [120, 160, 230], 0.25 * this.phoneLit);
@@ -539,7 +562,7 @@
     // label + stamp
     G.quad(g, [[1280, 872 + o], [1420, 872 + o], [1428, 900 + o], [1276, 900 + o]], '#efe8d8');
     g.fillStyle = '#2a2320'; g.font = '600 14px "Barlow Condensed", sans-serif'; g.textAlign = 'left';
-    g.fillText('PROJEKT  CARBO', 1290, 892 + o);
+    g.fillText(S.chapter === 2 ? 'SILFORM ./. V&K' : 'PROJEKT  CARBO', 1290, 892 + o);
     g.save(); g.translate(1470, 930 + o); g.rotate(-0.12);
     g.strokeStyle = 'rgba(200,60,50,0.85)'; g.lineWidth = 2; g.strokeRect(-64, -16, 128, 30);
     g.fillStyle = 'rgba(200,60,50,0.85)'; g.font = '700 12px "Barlow Condensed", sans-serif'; g.textAlign = 'center';
@@ -567,7 +590,7 @@
     }
     // nameplate / business cards holder
     G.quad(g, [[40, 860 + o], [150, 858 + o], [156, 880 + o], [34, 882 + o]], '#b8955a');
-    g.fillStyle = 'rgba(0,0,0,0.6)'; g.font = '600 9px "Barlow Condensed", sans-serif'; g.textAlign = 'center'; g.fillText('M&A · 22.14', 95, 874 + o);
+    g.fillStyle = 'rgba(0,0,0,0.6)'; g.font = '600 9px "Barlow Condensed", sans-serif'; g.textAlign = 'center'; g.fillText('M&A · 9.14', 95, 874 + o);
     // succulent
     g.fillStyle = '#1a1a1c'; g.fillRect(40, 800 + o, 60, 50);
     g.fillStyle = '#2d3b2c';

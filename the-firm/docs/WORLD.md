@@ -2,7 +2,7 @@
 
 **Geography tells the career story:** Gliwice → Poland → Germany → Europe → back to Gliwice at a completely different professional level. Warsaw is deliberately **not** a core location. Germany is the second major world and eventually holds more professional locations than Poland.
 
-> Status: **Gliwice** (morning & evening office, partner floor, exteriors) and **Wrocław** (night establishing shot on the Oder, conference room) are built for Chapter I, plus the InterCity train between them. **Munich** exterior painters (twin domes, TV tower) remain in the codebase for the later Munich chapter. Everything else is designed below.
+> Status: **Stuttgart** (the valley at dusk in snow, the TV tower on its hill, the Vogt & Keller plant, and a meeting room above a stopped production line) and a **winter Gliwice** are built for Chapter II. **Gliwice** (morning & evening office, partner floor, exteriors) and **Wrocław** (night establishing shot on the Oder, conference room) are built for Chapter I, plus the InterCity train between them. **Munich** exterior painters (twin domes, TV tower) remain in the codebase for the later Munich chapter. Everything else is designed below.
 
 ## Poland
 | City | Role | Visual identity |

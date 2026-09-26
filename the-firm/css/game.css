@@ -201,3 +201,15 @@ body.letterbox .stamp { bottom: calc(10.5vh + 4vh); }
 .ce-road b { display: block; font-family: var(--f-display); font-weight: 500; font-size: 16px; color: #efe9df; margin: 4px 0; }
 .ce-road span { font-family: var(--f-label); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); }
 @media (max-width: 900px) { .ce-list { grid-template-columns: 1fr; } .ce-stages { grid-template-columns: repeat(2, 1fr); } .ce-road { grid-template-columns: repeat(2, 1fr); } }
+.ts-chapters { display: flex; gap: 16px; margin-top: 70px; flex-wrap: wrap; justify-content: center; max-width: 1000px; padding: 0 20px; }
+.ts-ch { text-align: left; width: 300px; padding: 18px 22px; border: 1px solid rgba(201,169,107,.3); background: rgba(255,255,255,.02); transition: all .3s; }
+.ts-ch:hover { border-color: var(--brass); background: rgba(201,169,107,.08); }
+.ts-ch i { display: block; font-style: normal; font-family: var(--f-label); font-size: 11px; letter-spacing: .4em; text-transform: uppercase; color: var(--brass); }
+.ts-ch b { display: block; font-family: var(--f-display); font-weight: 500; font-size: 26px; color: #f3eee6; margin: 6px 0 4px; }
+.ts-ch span { font-family: var(--f-display); font-style: italic; font-size: 15px; color: var(--text-dim); }
+.ts-cont { border-color: var(--brass); }
+.title-screen { cursor: default; }
+.dcard.memo-card { border-color: var(--brass); background: rgba(201,169,107,.08); } .dcard.memo-card i { background: #8a6a2c; }
+.dlg.choosing { height: 78vh; }
+.dlg.choosing .dlg-shade { background: linear-gradient(to top, rgba(3,4,6,.95) 0%, rgba(3,4,6,.82) 55%, rgba(3,4,6,.4) 80%, transparent 100%); }
+.choice .tag { white-space: nowrap; align-self: center; }

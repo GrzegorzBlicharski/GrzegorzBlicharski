@@ -149,6 +149,7 @@
     dNext.classList.remove('on');
     dCh.innerHTML = '';
     if (o.prompt != null) { dName.style.display = 'none'; renderText(o.prompt); dlg.classList.add('narr'); }
+    dlg.classList.add('choosing');
     return new Promise((res) => {
       const items = options.map((opt, i) => {
         const b = el('button', 'choice' + (opt.tag ? ' tagged' : ''), `<span class="n">${i + 1}</span><span class="t">${opt.text}</span>${opt.tag ? `<span class="tag">${opt.tag}</span>` : ''}`);
@@ -165,7 +166,7 @@
         F.off('key', onKey);
         F.audio.click();
         items.forEach((b, j) => b.classList.add(j === i ? 'picked' : 'gone'));
-        setTimeout(() => { dCh.innerHTML = ''; res(i); }, 450);
+        setTimeout(() => { dCh.innerHTML = ''; dlg.classList.remove('choosing'); res(i); }, 450);
       }
     });
   };
