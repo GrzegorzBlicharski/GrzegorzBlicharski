@@ -437,6 +437,115 @@
     },
   };
 
+  // ---------- Upper Silesia / Gliwice (original stylisations) ----------
+  // tall wooden lattice radio tower (a Gliwice icon)
+  G.lm.radioTower = (x, h, col, s, lights) => {
+    s = s || 1;
+    return { z: 2, kind: 'lm', draw(g, base) {
+      const bw = 34 * s, tw = 3 * s;
+      g.strokeStyle = col; g.lineWidth = 2.2 * s; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(x - bw, base); g.lineTo(x - tw, base - h); g.moveTo(x + bw, base); g.lineTo(x + tw, base - h); g.stroke();
+      g.lineWidth = 1 * s;
+      const n = 16;
+      for (let i = 0; i < n; i++) {
+        const t0 = i / n, t1 = (i + 1) / n;
+        const y0 = base - h * t0, y1 = base - h * t1;
+        const w0 = U.lerp(bw, tw, t0), w1 = U.lerp(bw, tw, t1);
+        g.beginPath(); g.moveTo(x - w0, y0); g.lineTo(x + w1, y1); g.moveTo(x + w0, y0); g.lineTo(x - w1, y1); g.moveTo(x - w1, y1); g.lineTo(x + w1, y1); g.stroke();
+      }
+      g.fillStyle = col; g.fillRect(x - 1 * s, base - h - 10 * s, 2 * s, 10 * s);
+      if (lights) lights.push({ x, y: base - h - 10 * s, r: 9 * s, col: [255, 40, 30], blink: 1.5, ph: 0.3 });
+    } };
+  };
+  // Rynek: row of townhouses around a town hall with a baroque helm
+  G.lm.townHall = (x, h, col, s) => {
+    s = s || 1;
+    return { z: 5, kind: 'lm', draw(g, base, r) {
+      g.fillStyle = col;
+      for (let k = -4; k <= 4; k++) {
+        const hx = x + k * 26 * s, hh = (48 + ((k * 37) % 13)) * s;
+        g.fillRect(hx - 12 * s, base - hh, 24 * s, hh);
+        g.beginPath(); g.moveTo(hx - 13 * s, base - hh); g.lineTo(hx, base - hh - 14 * s); g.lineTo(hx + 13 * s, base - hh); g.fill();
+        g.fillStyle = 'rgba(255,196,120,0.55)';
+        for (let w = 0; w < 3; w++) if (r() < 0.45) g.fillRect(hx - 6 * s + (w % 2) * 8 * s, base - hh + 10 * s + w * 12 * s, 4 * s, 6 * s);
+        g.fillStyle = col;
+      }
+      // town hall body and tower
+      g.fillRect(x - 30 * s, base - 70 * s, 60 * s, 70 * s);
+      g.fillRect(x - 9 * s, base - h * s, 18 * s, h * s);
+      const ty = base - h * s;
+      g.beginPath(); g.ellipse(x, ty - 6 * s, 11 * s, 9 * s, 0, 0, U.TAU); g.fill();          // helm bulb
+      g.fillRect(x - 3 * s, ty - 26 * s, 6 * s, 14 * s);                                        // lantern
+      g.beginPath(); g.moveTo(x - 4 * s, ty - 26 * s); g.lineTo(x, ty - 44 * s); g.lineTo(x + 4 * s, ty - 26 * s); g.fill();
+      g.fillStyle = 'rgba(255,236,200,0.85)'; g.beginPath(); g.arc(x, ty + 16 * s, 4 * s, 0, U.TAU); g.fill();
+    } };
+  };
+  // mine headframe with twin sheave wheels (Upper Silesian skyline cue); win arg ignored
+  G.lm.headframe = (x, h, col, win, s, lights) => {
+    s = s || 1;
+    return { z: 3, kind: 'lm', draw(g, base) {
+      g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 3 * s;
+      g.beginPath(); g.moveTo(x - 20 * s, base); g.lineTo(x - 8 * s, base - h); g.moveTo(x + 20 * s, base); g.lineTo(x + 8 * s, base - h); g.moveTo(x + 20 * s, base); g.lineTo(x + 70 * s, base - h * 0.2); g.stroke();
+      g.lineWidth = 1.2 * s;
+      for (let k = 1; k < 6; k++) { const y = base - (h * k) / 6, w = U.lerp(20, 8, k / 6) * s; g.beginPath(); g.moveTo(x - w, y); g.lineTo(x + w, y); g.stroke(); }
+      g.fillRect(x - 14 * s, base - h - 6 * s, 28 * s, 6 * s);
+      [-7, 7].forEach((o) => { g.beginPath(); g.arc(x + o * s, base - h - 12 * s, 9 * s, 0, U.TAU); g.lineWidth = 2 * s; g.stroke(); });
+      g.fillRect(x + 40 * s, base - 44 * s, 70 * s, 44 * s); // winding house
+      if (lights) lights.push({ x, y: base - h - 22 * s, r: 7 * s, col: [255, 40, 30], blink: 2.2, ph: 0.9 });
+    } };
+  };
+  // tall industrial chimney; win arg ignored
+  G.lm.chimney = (x, h, col, win, s, lights) => {
+    s = s || 1;
+    return { z: 2, kind: 'lm', draw(g, base) {
+      g.fillStyle = col;
+      g.beginPath(); g.moveTo(x - 11 * s, base); g.lineTo(x - 5 * s, base - h); g.lineTo(x + 5 * s, base - h); g.lineTo(x + 11 * s, base); g.fill();
+      g.fillStyle = 'rgba(255,255,255,0.08)';
+      for (let k = 1; k < 4; k++) g.fillRect(x - 8 * s, base - (h * k) / 4, 16 * s, 2 * s);
+      if (lights) lights.push({ x, y: base - h - 2, r: 7 * s, col: [255, 40, 30], blink: 1.8, ph: 1.7 });
+    } };
+  };
+  // ---------- Wrocław (original stylisations) ----------
+  // cathedral with twin slender spires on the river island
+  G.lm.twinSpires = (x, h, col, s, lights) => {
+    s = s || 1;
+    return { z: 6, kind: 'lm', draw(g, base) {
+      g.fillStyle = col;
+      g.fillRect(x - 40 * s, base - 120 * s, 190 * s, 120 * s);
+      g.beginPath(); g.moveTo(x - 40 * s, base - 120 * s); g.lineTo(x + 55 * s, base - 170 * s); g.lineTo(x + 150 * s, base - 120 * s); g.fill();
+      [x, x + 44 * s].forEach((tx) => {
+        const tw = 30 * s, th = h * 0.55 * s;
+        g.fillRect(tx - tw / 2, base - th, tw, th);
+        g.beginPath(); g.moveTo(tx - tw / 2 - 2 * s, base - th); g.lineTo(tx, base - h * s); g.lineTo(tx + tw / 2 + 2 * s, base - th); g.fill();
+        g.fillRect(tx - 1 * s, base - h * s - 14 * s, 2 * s, 14 * s);
+        g.fillStyle = 'rgba(255,214,150,0.5)'; g.fillRect(tx - 3 * s, base - th + 14 * s, 6 * s, 20 * s); g.fillStyle = col;
+      });
+      // floodlight on the facade only
+      g.save(); g.globalCompositeOperation = 'source-atop';
+      const fl = g.createLinearGradient(0, base - h * s, 0, base);
+      fl.addColorStop(0, 'rgba(255,200,130,0.3)'); fl.addColorStop(1, 'rgba(255,170,100,0.08)');
+      g.fillStyle = fl; g.fillRect(x - 50 * s, base - h * s - 20 * s, 210 * s, h * s + 20 * s);
+      g.restore();
+      if (lights) lights.push({ x: x + 22 * s, y: base - 150 * s, r: 1, col: [255, 200, 140], blink: 0 });
+    } };
+  };
+  // the one tall tower: slender shaft with vertical ribs and stepped wings
+  G.lm.skyTower = (x, h, col, win, s, lights) => {
+    s = s || 1;
+    return { z: 4, kind: 'lm', draw(g, base, r) {
+      const w = 46 * s;
+      g.fillStyle = col;
+      g.fillRect(x - 70 * s, base - h * 0.3, 70 * s, h * 0.3);
+      g.fillRect(x + w, base - h * 0.24, 80 * s, h * 0.24);
+      g.fillRect(x, base - h, w, h);
+      G.windowGrid(g, r, x + 2, base - h + 6, w - 4, h - 8, Object.assign({}, win, { floorMode: true, cool: [180, 210, 255], warmth: 0.35 }));
+      G.windowGrid(g, r, x - 68 * s, base - h * 0.3, 66 * s, h * 0.3, win);
+      g.fillStyle = 'rgba(160,190,230,0.16)'; for (let k = 1; k < 5; k++) g.fillRect(x + (k * w) / 5, base - h, 1, h);
+      g.fillStyle = col; g.fillRect(x + w * 0.2, base - h - 26 * s, w * 0.6, 26 * s);
+      if (lights) { lights.push({ x: x + w / 2, y: base - h - 28 * s, r: 9 * s, col: [255, 40, 30], blink: 1.3, ph: 0.1 }); }
+    } };
+  };
+
   // animated aviation lights over a skyline layer
   G.drawLights = (g, lights, t, ox, oy, sc) => {
     sc = sc || 1;

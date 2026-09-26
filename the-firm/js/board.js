@@ -4,9 +4,9 @@
   const el = F.el;
 
   const NODES = {
-    zielinski: { type: 'photo', x: 14, y: 22, rot: -3, title: 'Tomasz Zieliński', sub: 'President · KS Syrena', portrait: 'zielinski' },
+    zielinski: { type: 'photo', x: 14, y: 22, rot: -3, title: 'Tomasz Zieliński', sub: 'President · KS Carbo', portrait: 'zielinski' },
     anna: { type: 'photo', x: 14, y: 64, rot: 2.5, title: 'Anna Zielińska', sub: '?', portrait: 'anna', need: ['spouse', 'anna'], hint: 'Who is Anna? Open sources.' },
-    vistula: { type: 'doc', x: 38, y: 70, rot: -1.5, title: 'Vistula Capital sp. z o.o.', body: 'KRS 0000981234<br>registered <b>18.09.2026</b><br>capital PLN 5,000', need: ['anna', 'factoring', 'newco'], hint: 'A name in the board minutes. Check the registry.' },
+    vistula: { type: 'doc', x: 38, y: 70, rot: -1.5, title: 'Odra Capital sp. z o.o.', body: 'KRS 0000981234<br>registered <b>18.09.2026</b><br>capital PLN 5,000', need: ['anna', 'factoring', 'newco'], hint: 'A name in the board minutes. Check the registry.' },
     factoring: { type: 'doc', x: 42, y: 30, rot: 1.8, title: 'Factoring agreement', body: 'Board consent <b>02.10.2026</b><br>media receivables 2027–30<br>at <b>61%</b> of face value', need: ['factoring'], hint: 'Something the board approved on 2 October.' },
     tv: { type: 'note', x: 64, y: 12, rot: -4, title: 'Media rights', body: 'Ekstraklasa TV money<br>≈ 40% of club revenue<br>2027/28 – 2029/30' },
     folder73: { type: 'note', x: 66, y: 44, rot: 3, title: 'VDR 7.3 “Financing”', body: 'closed 03:12<br>by seller’s counsel', need: ['revoked', 'cfo'], hint: 'Check the data room index.' },
@@ -25,7 +25,7 @@
     { a: 'vistula', b: 'spa34', label: 'related party' },
     { a: 'lease', b: 'spa63', label: 'risk shifted to us' },
     { a: 'folder73', b: 'factoring', label: 'hidden' },
-    { a: 'zielinski', b: 'factoring', label: 'abstained (conflict)' },
+    { a: 'zielinski', b: 'factoring', label: 'left the room (conflict)' },
   ];
   const key = (a, b) => [a, b].sort().join('|');
   const unlocked = (id) => { const n = NODES[id]; return !n.need || n.need.some((e) => F.state.findings[e]); };
@@ -35,7 +35,7 @@
     const p = F.ui.panel('board', `
       <div class="bd-wall"></div><div class="bd-lamp"></div>
       <div class="bd-area"><svg class="bd-svg"><defs><filter id="strshadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="3" stdDeviation="2" flood-opacity=".55"/></filter></defs><g class="bd-links"></g><path class="bd-temp" /></svg></div>
-      <div class="bd-title">PROJEKT SYRENA<span>project room 22.3 · Monday 18:58</span></div>
+      <div class="bd-title">PROJEKT CARBO<span>project room 22.3 · Monday 18:58</span></div>
       <div class="bd-help">Drag from one card to another to connect them. Cards with “?” need evidence from the documents.</div>
       <button class="bd-close">Step back <kbd>Esc</kbd></button>
       <div class="bd-reveal"></div>`);
@@ -155,7 +155,7 @@
           p.node.classList.add('revealed');
           reveal.innerHTML = `<div class="rv-k">The shape of it</div>
             <div class="rv-h">He is selling the club’s future<br>to his wife.</div>
-            <div class="rv-p">Three weeks ago Anna Zielińska founded Vistula Capital with five thousand złoty. On 2 October the club agreed to sell it three seasons of TV money at 61 cents on the euro. Folder 7.3 closed at 03:12. And the seller’s draft makes the entire data room “disclosed” — so the warranty that would have caught it is worthless.</div>
+            <div class="rv-p">Three weeks ago Anna Zielińska founded Odra Capital with five thousand złoty. On 2 October the club agreed to sell it three seasons of TV money at 61 cents on the euro. Folder 7.3 closed at 03:12. And the seller’s draft makes the entire data room “disclosed” — so the warranty that would have caught it is worthless.</div>
             <button class="rv-go">Continue</button>`;
           reveal.querySelector('.rv-go').addEventListener('pointerdown', (e) => { e.stopPropagation(); close(); });
         }, 900);

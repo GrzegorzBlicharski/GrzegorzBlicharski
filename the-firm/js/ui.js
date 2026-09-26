@@ -95,6 +95,8 @@
   // render words with staggered fade; returns total reveal ms
   function renderText(text) {
     dText.innerHTML = '';
+    let gloss = null;
+    text = text.replace(/<span class="gloss">([\s\S]*?)<\/span>/, (m, g1) => { gloss = g1; return ''; }).trim();
     const words = text.split(/(\s+)/);
     let delay = 0;
     words.forEach((w) => {
@@ -107,6 +109,7 @@
       if (/[.?!…—]$/.test(w)) delay += 160;
       else if (/[,;:]$/.test(w)) delay += 70;
     });
+    if (gloss) { const gl = el('span', 'gloss w', gloss); gl.style.animationDelay = delay + 'ms'; dText.appendChild(gl); delay += 200; }
     return delay;
   }
   function finishText() { dText.querySelectorAll('.w').forEach((s) => { s.style.animationDelay = '0ms'; s.style.animationDuration = '120ms'; }); }

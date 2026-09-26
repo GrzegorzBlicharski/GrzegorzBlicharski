@@ -1,4 +1,4 @@
-/* THE FIRM — 22nd floor, M&A group, Munich. Environment-first hub: the desk IS the interface.
+/* THE FIRM — 22nd floor, M&A group, Gliwice. Environment-first hub: the desk IS the interface.
    Two lighting states: morning (07:19, rain, cold dawn) and evening (18:52, warm lamps, dark glass). */
 (function (F) {
   'use strict';
@@ -34,8 +34,8 @@
       const win = { lit: L.winLit, warm: [255, 196, 120], wa: eve ? 0.95 : 0.75, cw: 3, ch: 4, gx: 4, gy: 5 };
       this.clouds = G.cloudTexture(VW * 2.2, 600, eve ? 12 : 4, { n: 220, col: L.cloud, a: eve ? 0.14 : 0.16, rmin: 80, rmax: 260 });
       const body = (k) => U.rgba(U.mix(L.cityBody, eve ? [8, 10, 14] : [90, 96, 108], k), 1);
-      this.far = G.skyline({ w: VW + 800, h: 1000, base: 520, seed: 21, minW: 26, maxW: 80, minH: 8, maxH: 44, gap: 10, pitched: 0.6, body: body(0.55), fog: eve ? [26, 30, 40] : [100, 106, 118], fogBottom: 0.45, fogTop: 0.3, win: Object.assign({}, win, { lit: L.winLit * 0.6 }), landmarks: [G.lm.tvTower(380, 290, body(0.55), 0.95, []), G.lm.twinSlabs(1560, 150, body(0.55), win, 0.8)], below: body(0.6), q: q * 0.6 });
-      this.mid = G.skyline({ w: VW + 800, h: 1000, base: 590, seed: 33, minW: 30, maxW: 95, minH: 20, maxH: 90, gap: 8, pitched: 0.75, body: body(0.3), edge: eve ? 'rgba(90,100,120,0.2)' : 'rgba(150,160,175,0.22)', fog: eve ? [20, 24, 32] : [84, 90, 102], fogBottom: 0.35, win, landmarks: [G.lm.twinDomes(1240, 150, body(0.3), 1.05), G.lm.church(1560, 90, body(0.3), 0.9), G.lm.church(1780, 80, body(0.3), 0.9)], groundGlow: [255, 170, 90], groundGlowA: eve ? 0.45 : 0.25, below: body(0.35), q: q * 0.7 });
+      this.far = G.skyline({ w: VW + 800, h: 1000, base: 520, seed: 21, minW: 26, maxW: 80, minH: 8, maxH: 44, gap: 10, pitched: 0.6, body: body(0.55), fog: eve ? [26, 30, 40] : [100, 106, 118], fogBottom: 0.45, fogTop: 0.3, win: Object.assign({}, win, { lit: L.winLit * 0.6 }), landmarks: [G.lm.radioTower(1180, 300, body(0.5), 0.95, []), G.lm.headframe(1560, 150, body(0.55), win, 0.8)], below: body(0.6), q: q * 0.6 });
+      this.mid = G.skyline({ w: VW + 800, h: 1000, base: 590, seed: 33, minW: 30, maxW: 95, minH: 20, maxH: 90, gap: 8, pitched: 0.75, body: body(0.3), edge: eve ? 'rgba(90,100,120,0.2)' : 'rgba(150,160,175,0.22)', fog: eve ? [20, 24, 32] : [84, 90, 102], fogBottom: 0.35, win, landmarks: [G.lm.townHall(1240, 150, body(0.3), 1.05), G.lm.church(1560, 90, body(0.3), 0.9), G.lm.church(1780, 80, body(0.3), 0.9)], groundGlow: [255, 170, 90], groundGlowA: eve ? 0.45 : 0.25, below: body(0.35), q: q * 0.7 });
       this.near = G.skyline({ w: VW + 900, h: 1100, base: 700, seed: 47, minW: 60, maxW: 170, minH: 30, maxH: 150, gap: 30, pitched: 0.8, body: body(0), edge: 'rgba(120,130,150,0.25)', win: Object.assign({}, win, { lit: L.winLit * 1.4, cw: 5, ch: 6, gx: 6, gy: 7, wa: 0.9 }), groundGlow: [255, 160, 80], groundGlowA: eve ? 0.5 : 0.3, below: body(0.05), q: q * 0.75 });
       this.lights = [];
       this.room = F.offscreen(VW + 500, VH + 300, q, (g) => { g.translate(250, 150); paintRoom(g, L, eve); });
@@ -62,14 +62,17 @@
       const deskY = () => (1 - self.sit) * 420;
       F.hotspots = [
         { id: 'window', d: D_ROOM, x: WIN.x0 + 40, y: WIN.y0 + 20, w: 520, h: 330, label: 'Window', sub: 'Look out over the city', onClick: () => F.emit('office:window') },
-        { id: 'stairs', d: D_ROOM, poly: [[1600, 740], [1640, 120], [1860, 60], [1900, 760]], label: 'Stairs · 23. OG', sub: this.mode === 'morning' ? 'Partner floor' : 'Partner floor', onClick: () => F.emit('office:stairs') },
+        { id: 'stairs', d: D_ROOM, poly: [[1600, 740], [1640, 120], [1860, 60], [1900, 760]], label: 'Stairs · 10th floor', sub: this.mode === 'morning' ? 'Partner floor' : 'Partner floor', onClick: () => F.emit('office:stairs') },
         { id: 'monitor', d: D_DESK, x: 360, y: 430, w: 520, h: 330, label: 'Workstation', sub: 'Mail · Documents · Research', onClick: () => F.emit('office:computer') },
         { id: 'phone', d: D_DESK, poly: [[1050, 895], [1150, 895], [1160, 1000], [1040, 1000]], label: 'Phone', sub: 'Messages', onClick: () => F.emit('office:phone') },
-        { id: 'file', d: D_DESK, poly: [[1230, 850], [1540, 850], [1600, 975], [1210, 975]], label: 'Case File', sub: 'Projekt SYRENA', onClick: () => F.emit('office:file') },
+        { id: 'file', d: D_DESK, poly: [[1230, 850], [1540, 850], [1600, 975], [1210, 975]], label: 'Case File', sub: 'Projekt CARBO', onClick: () => F.emit('office:file') },
         { id: 'coffee', d: D_DESK, x: 905, y: 800, w: 100, h: 110, label: 'Coffee', sub: 'Still hot', onClick: () => F.emit('office:coffee') },
       ];
       if (this.jonas) F.hotspots.push({ id: 'jonas', d: D_JONAS, x: 930, y: 300, w: 140, h: 370, label: 'Jonas Brenner', sub: 'Associate · Talk', onClick: () => F.emit('office:jonas') });
-      if (this.mode === 'evening') F.hotspots.push({ id: 'board', d: D_ROOM, poly: [[20, 150], [210, 190], [210, 690], [20, 760]], label: 'Project Room', sub: 'Case board', onClick: () => F.emit('office:board') });
+      if (this.mode === 'evening') {
+        F.hotspots.push({ id: 'board', d: D_ROOM, poly: [[-40, 60], [210, 150], [210, 690], [-40, 820]], label: 'Project Room 22.3', sub: 'The case board', onClick: () => F.emit('office:board') });
+        F.hotspots.push({ id: 'jonasEve', d: D_JONAS, x: 250, y: 330, w: 170, h: 420, label: 'Jonas Brenner', sub: 'Still here · Talk', onClick: () => F.emit('office:jonasEve') });
+      }
     },
     // cinematic arrival: sit down, monitor wakes, phone buzzes
     async arrive() {
@@ -154,6 +157,14 @@
           light: { key: [180, 195, 225], keyA: 0.22, dir: -1, amb: [40, 46, 60], rim: L.rim, rimA: 1.0 + hj * 0.4, rimSide: 1 },
         });
         G.steam(g, 1030, 432, t, 0.7, 0.7);
+      }
+      if (eve) {
+        F.layer(D_JONAS);
+        G.shadow(g, 330, 740, 90, 12, 0.5);
+        F.people.draw(g, F.people.cast.jonas, 330, 740, 420, {
+          pose: 'crossed', turn: 0.35, expr: 'tired', lookX: 0.5, slot: 'eve',
+          light: { key: [255, 200, 150], keyA: 0.55, dir: 1, amb: [60, 50, 44], rim: [255, 190, 130], rimA: 0.7 + (this.hoverA.jonasEve || 0) * 0.5, rimSide: -1 },
+        });
       }
       // ---------------- desk (foreground)
       const dy = (1 - this.sit) * 420;
@@ -306,6 +317,16 @@
     const mg = g.createLinearGradient(-250, 0, WIN.x0, 0);
     mg.addColorStop(0, eve ? 'rgba(255,200,140,0.10)' : 'rgba(170,190,220,0.08)'); mg.addColorStop(1, 'rgba(0,0,0,0.2)');
     G.quad(g, [[-40, 60], [WIN.x0 - 20, WIN.y0 + 40], [WIN.x0 - 20, WIN.y1 - 10], [-40, 820]], mg);
+    if (eve) {
+      // the project room is lit: the case board glows through the glass
+      G.quad(g, [[-30, 90], [WIN.x0 - 26, WIN.y0 + 48], [WIN.x0 - 26, WIN.y1 - 14], [-30, 800]], 'rgba(255,190,120,0.16)');
+      G.quad(g, [[-10, 200], [150, 232], [150, 470], [-10, 470]], 'rgba(70,48,30,0.85)');
+      const pr = U.rng(71);
+      for (let k = 0; k < 14; k++) { const x = -4 + pr() * 140, y = 214 + pr() * 230; g.fillStyle = pr() < 0.3 ? 'rgba(240,220,140,0.75)' : 'rgba(236,230,218,0.75)'; g.fillRect(x, y + (x + 10) * 0.2, 16, 12); }
+      g.strokeStyle = 'rgba(200,40,40,0.8)'; g.lineWidth = 1.2;
+      [[10, 240, 90, 330], [90, 330, 60, 420], [30, 260, 120, 280], [60, 420, 130, 360]].forEach(([a, b, c, d]) => { g.beginPath(); g.moveTo(a, b + (a + 10) * 0.2); g.quadraticCurveTo((a + c) / 2, (b + d) / 2 + 20, c, d + (c + 10) * 0.2); g.stroke(); });
+      G.glow(g, 70, 260, 160, [255, 200, 140], 0.25);
+    }
     // frosted band with firm pattern
     G.quad(g, [[-40, 360], [WIN.x0 - 20, 380], [WIN.x0 - 20, 420], [-40, 450]], 'rgba(220,225,235,0.12)');
     // meeting room interior hints: table, chairs, screen (dim)
@@ -354,7 +375,7 @@
     g.beginPath(); g.moveTo(1560, 720); g.lineTo(1830, 40); g.stroke();
     // sign
     g.fillStyle = 'rgba(216,184,120,0.9)'; g.font = '600 15px "Barlow Condensed", sans-serif'; g.textAlign = 'left';
-    g.fillText('23 · PARTNER', 1636, 560);
+    g.fillText('10 · PARTNER', 1636, 560);
     g.fillStyle = 'rgba(216,184,120,0.5)'; g.fillRect(1636, 568, 70, 1);
     // floor: carpet
     const fg = g.createLinearGradient(0, WIN.y1, 0, VH + 150);
@@ -518,11 +539,11 @@
     // label + stamp
     G.quad(g, [[1280, 872 + o], [1420, 872 + o], [1428, 900 + o], [1276, 900 + o]], '#efe8d8');
     g.fillStyle = '#2a2320'; g.font = '600 14px "Barlow Condensed", sans-serif'; g.textAlign = 'left';
-    g.fillText('PROJEKT  SYRENA', 1290, 892 + o);
+    g.fillText('PROJEKT  CARBO', 1290, 892 + o);
     g.save(); g.translate(1470, 930 + o); g.rotate(-0.12);
     g.strokeStyle = 'rgba(200,60,50,0.85)'; g.lineWidth = 2; g.strokeRect(-64, -16, 128, 30);
     g.fillStyle = 'rgba(200,60,50,0.85)'; g.font = '700 12px "Barlow Condensed", sans-serif'; g.textAlign = 'center';
-    g.fillText('STRENG VERTRAULICH', 0, 4);
+    g.fillText('ŚCIŚLE POUFNE', 0, 4);
     g.restore();
     // desk lamp (right)
     g.fillStyle = '#0d0e10';

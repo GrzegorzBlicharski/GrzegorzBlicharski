@@ -1,10 +1,10 @@
-/* THE FIRM — Warsaw at night: establishing shot and the 22:47 conference room */
+/* THE FIRM — Wrocław at night: the Oder, Ostrów Tumski, and the 22:47 conference room */
 (function (F) {
   'use strict';
   const U = F.U, G = F.gfx;
   const VW = F.VW, VH = F.VH;
 
-  function warsawLayers(q, o) {
+  function wroclawLayers(q, o) {
     o = o || {};
     const win = { lit: 0.34, warm: [255, 190, 110], cool: [180, 210, 255], warmth: 0.55, wa: 0.9, cw: 3, ch: 4, gx: 3, gy: 4 };
     const lights = { far: [], mid: [], near: [] };
@@ -12,25 +12,24 @@
       landmarks: [G.lm.glassTower(1500, 60, 230, 'rgb(22,22,30)', win, lights.far), G.lm.glassTower(260, 50, 180, 'rgb(22,22,30)', win, lights.far)], below: 'rgb(28,20,20)' });
     far.lights = lights.far;
     const mid = G.skyline({ w: VW + 900, h: 1100, base: o.midBase || 780, seed: 313, minW: 40, maxW: 120, minH: 30, maxH: 110, gap: 10, body: 'rgb(12,12,18)', edge: 'rgba(255,170,110,0.18)', fog: [50, 34, 30], fogBottom: 0.4, win, q: q * 0.75,
+      pitched: 0.7,
       landmarks: [
-        G.lm.palace(o.palaceX || 820, 560, 'rgb(28,24,26)', o.palaceS || 1.12, lights.mid),
-        G.lm.spireTower(1340, 520, 'rgb(14,16,24)', win, 1.05, lights.mid),
-        G.lm.curvedTower(1180, 400, 'rgb(14,16,24)', win, 1, lights.mid),
-        G.lm.sailTower(1560, 380, 'rgb(14,16,24)', win, 1.05, lights.mid),
-        G.lm.glassTower(1680, 70, 300, 'rgb(14,16,24)', win, lights.mid, true),
-        G.lm.glassTower(1060, 64, 260, 'rgb(15,16,22)', win, lights.mid),
-        G.lm.glassTower(420, 70, 240, 'rgb(15,16,22)', win, lights.mid, true),
-        G.lm.glassTower(1840, 60, 200, 'rgb(15,16,22)', win, lights.mid),
+        G.lm.twinSpires(o.spiresX || 820, 360, 'rgb(28,24,26)', o.spiresS || 1.15, lights.mid),
+        G.lm.church(o.spiresX ? o.spiresX - 520 : 380, 190, 'rgb(22,20,24)', 1.5),
+        G.lm.church(o.spiresX ? o.spiresX + 330 : 1150, 140, 'rgb(20,18,22)', 1.2),
+        G.lm.skyTower(o.skyX || 1500, 470, 'rgb(14,16,24)', win, 1.05, lights.mid),
+        G.lm.glassTower(1760, 64, 170, 'rgb(15,16,22)', win, lights.mid),
+        G.lm.glassTower(250, 60, 150, 'rgb(15,16,22)', win, lights.mid),
       ], groundGlow: [255, 150, 70], groundGlowA: 0.5, below: 'rgb(16,12,12)' });
     mid.lights = lights.mid;
     return { far, mid };
   }
 
-  // ------------------------------------------------------------------ WARSAW ESTABLISHING — 22:47
-  F.defineScene('warsaw_wide', {
+  // ------------------------------------------------------------------ WROCŁAW ESTABLISHING — 22:47
+  F.defineScene('wroclaw_wide', {
     enter() {
       const q = F.quality();
-      this.L = warsawLayers(q, { palaceX: 900 });
+      this.L = wroclawLayers(q, { spiresX: 900 });
       this.clouds = G.cloudTexture(VW * 2.2, 700, 61, { n: 280, col: [150, 90, 60], a: 0.18, rmin: 80, rmax: 300 });
       this.clouds2 = G.cloudTexture(VW * 2.2, 500, 62, { n: 200, col: [20, 16, 18], a: 0.4, rmin: 100, rmax: 260 });
       const win = { lit: 0.22, warm: [255, 190, 110], wa: 0.85, cw: 5, ch: 4, gx: 9, gy: 10 };
@@ -90,26 +89,45 @@
       F.layer(0.12, 0.4);
       g.drawImage(this.L.mid.canvas, -450, 0, this.L.mid.canvas.vw, this.L.mid.canvas.vh);
       G.drawLights(g, this.L.mid.lights, t, -450, 0);
-      // Palace floodlight halo in rain
-      G.glow(g, 900, 420, 380, [255, 180, 110], 0.12);
-      // avenue with traffic streaks
+      // cathedral floodlight halo in rain
+      G.glow(g, 520, 460, 380, [255, 180, 110], 0.12);
+      // the Oder: dark water with smeared reflections of the lit city
       F.layer(0.2, 0.55);
-      const av = g.createLinearGradient(0, 800, 0, 900);
-      av.addColorStop(0, '#1a100c'); av.addColorStop(1, '#0a0707');
-      g.fillStyle = av; g.fillRect(-500, 800, VW + 1000, 120);
-      this.traffic.forEach((c) => {
-        const y = 830 + c.lane * 50;
-        const col = c.dir > 0 ? [255, 240, 220] : [255, 40, 30];
-        g.strokeStyle = U.rgba(col, 0.7); g.lineWidth = 3;
-        g.beginPath(); g.moveTo(c.x, y); g.lineTo(c.x - c.dir * 160, y); g.stroke();
-        G.glow(g, c.x, y, 26, col, 0.6);
-      });
-      // Warsaw tram — yellow & red
+      const rv = g.createLinearGradient(0, 780, 0, 960);
+      rv.addColorStop(0, '#1d130f'); rv.addColorStop(1, '#070506');
+      g.fillStyle = rv; g.fillRect(-500, 780, VW + 1000, 200);
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      const rr = U.rng(4);
+      for (let k = 0; k < 70; k++) {
+        const x = -300 + rr() * (VW + 600), w = 3 + rr() * 10, len = 40 + rr() * 120;
+        const wob = Math.sin(t * 1.5 + k) * 3;
+        const c = rr() < 0.8 ? [255, 180, 100] : [180, 200, 255];
+        const gr = g.createLinearGradient(0, 790, 0, 790 + len);
+        gr.addColorStop(0, U.rgba(c, 0.35)); gr.addColorStop(1, U.rgba(c, 0));
+        g.fillStyle = gr; g.fillRect(x + wob, 790, w, len);
+      }
+      // cathedral spires' reflection
+      const cr = g.createLinearGradient(0, 790, 0, 960);
+      cr.addColorStop(0, 'rgba(255,190,120,0.22)'); cr.addColorStop(1, 'rgba(255,190,120,0)');
+      g.fillStyle = cr; g.fillRect(420 + Math.sin(t) * 4, 790, 140, 170);
+      g.restore();
+      // rain rings on the water
+      g.strokeStyle = 'rgba(255,220,190,0.12)'; g.lineWidth = 1;
+      for (let k = 0; k < 14; k++) { const ph = (t * 1.3 + k * 0.37) % 1; const x = (k * 263) % (VW + 200) - 100, y = 820 + (k * 47) % 120; g.beginPath(); g.ellipse(x, y, 4 + ph * 18, 1 + ph * 4, 0, 0, U.TAU); g.globalAlpha = 1 - ph; g.stroke(); }
+      g.globalAlpha = 1;
+      // steel arch bridge (green-painted, lit) with a blue-and-white tram crossing
+      const by = 772;
+      g.fillStyle = '#0c120e'; g.fillRect(-500, by, VW + 1000, 12);
+      g.strokeStyle = '#28402f'; g.lineWidth = 5;
+      for (let k = 0; k < 3; k++) { const x0 = 160 + k * 560; g.beginPath(); g.moveTo(x0, by); g.quadraticCurveTo(x0 + 280, by - 120, x0 + 560, by); g.stroke(); g.lineWidth = 1.5; for (let j = 1; j < 10; j++) { const xx = x0 + j * 56, yy = by - 120 * (1 - Math.pow((j / 10) * 2 - 1, 2)) * 0.5 * 2 * 0.5; g.beginPath(); g.moveTo(xx, by); g.lineTo(xx, by - 60 * (1 - Math.pow((j / 10) * 2 - 1, 2))); g.stroke(); } g.lineWidth = 5; }
+      for (let k = 0; k < 12; k++) { const x = 100 + k * 160; g.fillStyle = '#0a0d0b'; g.fillRect(x, by - 34, 2, 34); G.glow(g, x, by - 36, 22, [255, 210, 150], 0.7); const lr = g.createLinearGradient(0, by + 12, 0, by + 120); lr.addColorStop(0, 'rgba(255,200,130,0.3)'); lr.addColorStop(1, 'rgba(255,200,130,0)'); g.fillStyle = lr; g.fillRect(x - 4, by + 12, 8, 110); }
       const tx = (this.tram % 3200) - 900;
-      g.fillStyle = '#c9a227'; G.roundRect(g, tx, 850, 520, 34, 8); g.fill();
-      g.fillStyle = '#a3261f'; g.fillRect(tx, 874, 520, 10);
-      for (let k = 0; k < 10; k++) { g.fillStyle = 'rgba(255,245,210,0.95)'; g.fillRect(tx + 16 + k * 50, 856, 34, 12); }
-      G.glow(g, tx + 520, 866, 50, [255, 250, 220], 0.7);
+      g.fillStyle = '#dfe6ee'; G.roundRect(g, tx, by - 38, 520, 34, 8); g.fill();
+      g.fillStyle = '#2d5fa8'; g.fillRect(tx, by - 14, 520, 10);
+      for (let k = 0; k < 10; k++) { g.fillStyle = 'rgba(255,245,210,0.95)'; g.fillRect(tx + 16 + k * 50, by - 32, 34, 12); }
+      G.glow(g, tx + 520, by - 22, 50, [255, 250, 220], 0.7);
+      this.traffic.forEach((c) => { if (c.lane < 0.5) return; const col = c.dir > 0 ? [255, 240, 220] : [255, 40, 30]; g.strokeStyle = U.rgba(col, 0.6); g.lineWidth = 2.5; g.beginPath(); g.moveTo(c.x, by - 4); g.lineTo(c.x - c.dir * 120, by - 4); g.stroke(); });
       // near blocks & neon
       F.layer(0.3, 0.7);
       g.drawImage(this.near, -400, 480, this.near.vw, this.near.vh);
@@ -134,13 +152,13 @@
     exit() { F.grade.tintA = 0; },
   });
 
-  // ------------------------------------------------------------------ CONFERENCE ROOM — Adler Wendt Warsaw, 30th floor, 22:47
+  // ------------------------------------------------------------------ CONFERENCE ROOM — Adler Wendt Wrocław, 14th floor, 22:47
   const VP = [960, 470];
   const W = { x0: 300, x1: 1620, y0: 90, y1: 640 };
   F.defineScene('conference', {
     enter(o) {
       const q = F.quality();
-      this.L = warsawLayers(q, { palaceX: 1450, palaceS: 1.3, midBase: 740, farBase: 660 });
+      this.L = wroclawLayers(q, { spiresX: 1400, spiresS: 1.35, skyX: 1950, midBase: 740, farBase: 660 });
       this.clouds = G.cloudTexture(VW * 2.2, 600, 71, { n: 240, col: [150, 90, 60], a: 0.16, rmin: 80, rmax: 280 });
       this.room = F.offscreen(VW + 500, VH + 300, q, (g) => { g.translate(250, 150); paintConf(g); });
       this.table = F.offscreen(VW + 600, 700, q, (g) => { g.translate(300, 0); paintTable(g); });
@@ -347,5 +365,5 @@
     g.fillStyle = '#0b0b0d'; G.roundRect(g, 1000, 560, 70, 120, 10); g.fill();
   }
 
-  F.warsawLayers = warsawLayers;
+  F.wroclawLayers = wroclawLayers;
 })(window.F);

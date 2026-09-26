@@ -52,12 +52,12 @@ window.F = window.F || {};
   const ctx = cvs.getContext('2d', { alpha: false });
   F.cvs = cvs; F.ctx = ctx;
 
-  const view = { w: 0, h: 0, dpr: 1, scale: 1, px: 1 };
+  const view = { w: 0, h: 0, dpr: 1, scale: 1, px: 1, res: 1 }; // res: adaptive resolution factor
   F.view = view;
 
   function resize() {
     const w = window.innerWidth, h = window.innerHeight;
-    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let dpr = Math.min(window.devicePixelRatio || 1, 2) * view.res;
     // cap backing store for performance
     const maxW = 2880;
     if (w * dpr > maxW) dpr = maxW / w;
@@ -255,6 +255,7 @@ window.F = window.F || {};
     if (dt > 0.1) dt = 0.1;
     F.time += dt;
     F.fps = U.lerp(F.fps, 1 / Math.max(dt, 0.001), 0.05);
+    adapt(dt);
 
     // mouse parallax smoothing
     const tmx = mouse.inside ? mouse.nx : 0, tmy = mouse.inside ? mouse.ny : 0;
@@ -310,6 +311,14 @@ window.F = window.F || {};
     F.ui && F.ui.updateHover(dt);
 
     requestAnimationFrame(frame);
+  }
+  // progressive enhancement: if the machine struggles, render at a lower backing-store density
+  let slowT = 0, fastT = 0;
+  function adapt(dt) {
+    if (document.hidden) return;
+    if (F.fps < 36) { slowT += dt; fastT = 0; } else if (F.fps > 57) { fastT += dt; slowT = 0; } else { slowT = Math.max(0, slowT - dt); }
+    if (slowT > 2.5 && view.res > 0.55) { view.res = Math.max(0.55, view.res - 0.15); slowT = 0; resize(); }
+    else if (fastT > 8 && view.res < 1) { view.res = Math.min(1, view.res + 0.15); fastT = 0; resize(); }
   }
   F.startLoop = () => requestAnimationFrame((n) => { last = n; frame(n); });
 })(window.F);

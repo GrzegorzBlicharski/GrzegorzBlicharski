@@ -61,7 +61,7 @@
       // live elements: elevator floor indicators
       const ind = [[1512, 332], [1640, 300], [1790, 262]];
       ind.forEach(([x, y], i) => {
-        const floorNum = i === 0 ? 'EG' : String((((t * 0.7 + i * 4) | 0) % 26) + 1);
+        const floorNum = String(i === 0 ? 0 : (((t * 0.7 + i * 4) | 0) % 12) + 1);
         g.fillStyle = '#ffb35a';
         g.font = '500 20px "IBM Plex Mono", monospace';
         g.textAlign = 'center';
@@ -115,7 +115,7 @@
     g.shadowBlur = 0;
     g.font = '500 18px "Barlow Condensed", sans-serif';
     g.fillStyle = 'rgba(216,184,120,0.8)';
-    g.fillText('R E C H T S A N W Ä L T E   ·   M Ü N C H E N   ·   W A R S Z A W A   ·   F R A N K F U R T', 1000, 462);
+    g.fillText('K A N C E L A R I A   P R A W N A   ·   R E C H T S A N W Ä L T E     G L I W I C E   ·   W R O C Ł A W   ·   B E R L I N   ·   S T U T T G A R T', 1000, 462);
     g.restore();
     // left wall = glass facade in perspective (window area kept transparent)
     g.save();
@@ -235,15 +235,15 @@
     enter(o) {
       const q = F.quality();
       const win = { lit: 0.18, warm: [255, 196, 120], wa: 0.8, cw: 3, ch: 4, gx: 4, gy: 5 };
-      this.far = G.skyline({ w: VW + 800, h: 1400, base: 1000, seed: 21, minW: 30, maxW: 90, minH: 12, maxH: 60, gap: 10, pitched: 0.6, body: 'rgb(58,66,80)', fog: [100, 106, 118], fogBottom: 0.5, fogTop: 0.3, win: Object.assign({}, win, { lit: 0.1 }), landmarks: [G.lm.tvTower(520, 380, 'rgb(60,68,82)', 1.1), G.lm.twinSlabs(1700, 180, 'rgb(58,66,80)', win, 0.95)], below: 'rgb(70,76,88)', q: q * 0.7 });
-      this.mid = G.skyline({ w: VW + 800, h: 1500, base: 1060, seed: 33, minW: 36, maxW: 110, minH: 30, maxH: 110, gap: 8, pitched: 0.75, body: 'rgb(34,40,50)', edge: 'rgba(150,160,175,0.25)', fog: [80, 88, 100], fogBottom: 0.4, win, landmarks: [G.lm.twinDomes(1000, 185, 'rgb(36,41,50)', 1.35), G.lm.church(640, 120, 'rgb(34,40,50)', 1.1)], groundGlow: [255, 170, 90], groundGlowA: 0.3, below: 'rgb(30,34,42)', q: q * 0.8 });
+      this.far = G.skyline({ w: VW + 800, h: 1400, base: 1000, seed: 21, minW: 30, maxW: 90, minH: 12, maxH: 60, gap: 10, pitched: 0.6, body: 'rgb(58,66,80)', fog: [100, 106, 118], fogBottom: 0.5, fogTop: 0.3, win: Object.assign({}, win, { lit: 0.1 }), landmarks: [G.lm.radioTower(520, 380, 'rgb(60,68,82)', 1.1), G.lm.headframe(1700, 180, 'rgb(58,66,80)', win, 0.95)], below: 'rgb(70,76,88)', q: q * 0.7 });
+      this.mid = G.skyline({ w: VW + 800, h: 1500, base: 1060, seed: 33, minW: 36, maxW: 110, minH: 30, maxH: 110, gap: 8, pitched: 0.75, body: 'rgb(34,40,50)', edge: 'rgba(150,160,175,0.25)', fog: [80, 88, 100], fogBottom: 0.4, win, landmarks: [G.lm.townHall(1000, 185, 'rgb(36,41,50)', 1.35), G.lm.church(640, 120, 'rgb(34,40,50)', 1.1)], groundGlow: [255, 170, 90], groundGlowA: 0.3, below: 'rgb(30,34,42)', q: q * 0.8 });
       this.near = G.skyline({ w: VW + 900, h: 1800, base: 1300, seed: 47, minW: 90, maxW: 220, minH: 80, maxH: 260, gap: 30, pitched: 0.8, body: 'rgb(15,18,24)', edge: 'rgba(120,130,150,0.3)', win: Object.assign({}, win, { lit: 0.25, cw: 6, ch: 8, gx: 7, gy: 9, wa: 0.9 }), groundGlow: [255, 160, 80], groundGlowA: 0.35, below: 'rgb(12,14,18)', q: q * 0.85 });
       this.clouds = G.cloudTexture(VW * 2.2, 700, 4, { n: 240, col: [150, 160, 176], a: 0.16, rmin: 80, rmax: 280 });
       this.glass = new G.GlassDrops([{ x: 330, y: 60, w: 1260, h: 860 }], { beads: 1300, drips: 16, light: [205, 215, 232], seed: 21, scale: 1.2 });
       this.rain = new G.Rain(700, { angle: 0.14, speed: 1400, len: 40, alpha: 0.2 });
       this.alt = 0; // 0..1 ascent
       this.floor = 0;
-      this.target = (o && o.floor) || 22;
+      this.target = (o && o.floor) || 9;
       this.dur = 6.2;
       F.camSet(VW / 2, VH / 2, 1.0);
       F.cam.par = 12; F.cam.drift = 0.35;
@@ -323,12 +323,12 @@
       g.textAlign = 'center';
       g.fillStyle = '#ffb35a';
       g.font = '500 76px "IBM Plex Mono", monospace';
-      const fl = this.floor === 0 ? 'EG' : String(this.floor).padStart(2, '0');
+      const fl = String(this.floor).padStart(2, '0');
       g.fillText(fl, 1735, 470);
       G.glow(g, 1735, 445, 90, [255, 160, 70], 0.3);
       g.font = '500 16px "Barlow Condensed", sans-serif';
       g.fillStyle = 'rgba(255,179,90,0.7)';
-      g.fillText(a < 0.98 ? '▲  AUFWÄRTS' : '●  ' + this.target + '. OG', 1735, 540);
+      g.fillText(a < 0.98 ? '▲  W GÓRĘ' : '●  PIĘTRO ' + this.target, 1735, 540);
       // button column
       for (let k = 0; k < 6; k++) {
         const lit = k === 1;

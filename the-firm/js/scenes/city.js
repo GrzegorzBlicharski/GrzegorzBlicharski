@@ -27,7 +27,7 @@
     vg.addColorStop(0, 'rgba(140,160,190,0.22)'); vg.addColorStop(0.5, 'rgba(90,110,140,0.05)'); vg.addColorStop(1, 'rgba(0,0,0,0.3)');
     g.fillStyle = vg; g.fill();
     // floors & window lights (many small bays)
-    const floors = 30, fh = h / floors, bays = 12;
+    const floors = 14, fh = h / floors, bays = 10;
     for (let i = 0; i < floors; i++) {
       const y = base - (i + 1) * fh;
       g.fillStyle = 'rgba(0,0,0,0.28)';
@@ -54,8 +54,8 @@
     g.fillRect(x + w * 0.18, base - h + fh * 0.7, w * 0.64, Math.max(1.5, fh * 0.35));
   }
 
-  // ------------------------------------------------------------------ MUNICH ESTABLISHING — 07:12, rain
-  F.defineScene('munich_wide', {
+  // ------------------------------------------------------------------ GLIWICE ESTABLISHING — 07:12, rain
+  F.defineScene('city_wide', {
     enter() {
       const q = F.quality();
       this.clouds = G.cloudTexture(VW * 2.2, 700, 4, { n: 260, col: [150, 160, 176], a: 0.16, rmin: 80, rmax: 280 });
@@ -64,13 +64,13 @@
       this.far = G.skyline({
         w: VW + 600, h: 900, base: 792, seed: 21, minW: 30, maxW: 90, minH: 12, maxH: 55, gap: 10, pitched: 0.6,
         body: 'rgb(62,70,84)', fog: [104, 110, 120], fogBottom: 0.55, fogTop: 0.35, win: Object.assign({}, win, { lit: 0.08, wa: 0.4 }),
-        landmarks: [G.lm.tvTower(440, 360, 'rgb(64,72,86)', 1.05), G.lm.twinSlabs(1620, 170, 'rgb(62,70,84)', win, 0.9), G.lm.cylinderTower(1790, 130, 'rgb(62,70,84)', win, 0.8)],
+        landmarks: [ G.lm.headframe(1620, 170, 'rgb(62,70,84)', win, 0.9), G.lm.chimney(1790, 130, 'rgb(62,70,84)', win, 0.8)],
         q: q * 0.7,
       });
       this.mid = G.skyline({
         w: VW + 600, h: 1000, base: 842, seed: 33, minW: 36, maxW: 110, minH: 30, maxH: 95, gap: 8, pitched: 0.75,
         body: 'rgb(38,44,54)', edge: 'rgba(150,160,175,0.25)', fog: [90, 96, 108], fogBottom: 0.45, fogTop: 0.05, win,
-        landmarks: [G.lm.twinDomes(820, 175, 'rgb(40,45,54)', 1.25), G.lm.church(520, 110, 'rgb(38,44,54)', 1.1), G.lm.church(1180, 95, 'rgb(38,44,54)', 1), G.lm.church(1960, 120, 'rgb(38,44,54)', 1.1)],
+        landmarks: [G.lm.radioTower(560, 380, 'rgb(34,40,50)', 1.3), G.lm.townHall(900, 175, 'rgb(40,45,54)', 1.25), G.lm.church(520, 110, 'rgb(38,44,54)', 1.1), G.lm.church(1180, 95, 'rgb(38,44,54)', 1), G.lm.church(1960, 120, 'rgb(38,44,54)', 1.1)],
         groundGlow: [255, 170, 90], groundGlowA: 0.25, below: 'rgb(34,38,46)', q: q * 0.8,
       });
       this.near = G.skyline({
@@ -84,7 +84,7 @@
         fog: [70, 76, 88], fogBottom: 0.3, fogTop: 0.0, groundGlow: [255, 160, 80], groundGlowA: 0.28, below: 'rgb(22,25,32)', q: q * 0.85,
       });
       // HQ tower
-      this.hq = F.offscreen(260, 900, q, (g) => hqFar(g, 60, 880, 110, 720, { glassL: [70, 84, 104], glassM: [34, 42, 56], glassR: [14, 17, 23], edge: [180, 200, 230], lit: 0.3 }));
+      this.hq = F.offscreen(260, 900, q, (g) => hqFar(g, 60, 880, 120, 470, { glassL: [70, 84, 104], glassM: [34, 42, 56], glassR: [14, 17, 23], edge: [180, 200, 230], lit: 0.3 }));
       this.rain = new G.Rain(900, { angle: 0.14, speed: 1500, len: 44, alpha: 0.22, col: [190, 200, 215] });
       this.rainNear = new G.Rain(120, { angle: 0.16, speed: 2300, len: 110, alpha: 0.16, zmin: 0.7, col: [210, 220, 235] });
       F.camSet(VW / 2 - 60, VH / 2 + 10, 1.0);
@@ -148,7 +148,7 @@
   });
 
   // ------------------------------------------------------------------ TOWER — street level, tilt up the facade
-  const TOP = -2300, BASE = 820, ROAD0 = 852, ROAD1 = 1020;
+  const TOP = -1500, BASE = 820, ROAD0 = 852, ROAD1 = 1020;
   function towerW(u) { return U.lerp(1180, 560, u); }
   function floorY(u) { return BASE - (BASE - TOP) * (0.55 * u + 0.45 * (1 - (1 - u) * (1 - u))); }
 
@@ -164,7 +164,7 @@
         drawOldFacade(g, r);
         drawRightFacade(g, r);
         // tower body
-        const N = 26;
+        const N = 14;
         const cols = 14;
         for (let i = 0; i < N; i++) {
           const u0 = i / N, u1 = (i + 1) / N;
@@ -222,9 +222,9 @@
           g.beginPath(); g.moveTo(xb + 2, BASE); g.lineTo(xt + 1, floorY(1)); g.stroke();
         }
         // crown: dark band with brass lettering
-        const yc = floorY(24 / 26), yt = floorY(1);
+        const yc = floorY(12 / 14), yt = floorY(1);
         g.fillStyle = '#0b0d11';
-        const wc = towerW(24 / 26), wt = towerW(1);
+        const wc = towerW(12 / 14), wt = towerW(1);
         g.beginPath(); g.moveTo(VW / 2 - wc / 2, yc); g.lineTo(VW / 2 + wc / 2, yc); g.lineTo(VW / 2 + wt / 2, yt - 20); g.lineTo(VW / 2 - wt / 2, yt - 20); g.closePath(); g.fill();
         // parapet highlight
         g.fillStyle = 'rgba(180,195,220,0.25)';
@@ -253,7 +253,7 @@
         g.fillStyle = 'rgba(201,169,107,0.95)';
         g.font = '500 28px "Cormorant Garamond", serif';
         g.textAlign = 'center';
-        g.fillText('ADLER WENDT  ·  RECHTSANWÄLTE', VW / 2, BASE - 132);
+        g.fillText('ADLER WENDT  ·  KANCELARIA PRAWNA  ·  RECHTSANWÄLTE', VW / 2, BASE - 132);
       });
       // crown lettering drawn live (glow)
       this.reflect = F.offscreen(VW, 220, q * 0.5, (g) => {
@@ -300,7 +300,7 @@
       F.layer(1);
       g.drawImage(this.facade, 0, TOP - 100, VW, this.facade.vh);
       // crown lettering
-      const yt = floorY(1), yc = floorY(24 / 26);
+      const yt = floorY(1), yc = floorY(12 / 14);
       g.save();
       g.textAlign = 'center';
       g.font = '500 64px "Cormorant Garamond", serif';
@@ -346,7 +346,7 @@
         g.beginPath(); g.moveTo(x0, ROAD0 + 4); g.lineTo(x0 + 30, ROAD0 + 4); g.lineTo(x0 + 44 + k * 8, ROAD1); g.lineTo(x0 + 6 + k * 8, ROAD1); g.closePath(); g.fill();
       }
       // tram on far lane, cars on both lanes
-      if (this.tram.on) drawTram(g, this.tram.x, 900, t);
+      if (this.tram.on) drawBus(g, this.tram.x, 900, t);
       this.cars.forEach((c) => drawCar(g, c, c.lane ? 940 : 1000, c.lane ? 0.8 : 1, t));
       // near sidewalk (foreground)
       const sw = g.createLinearGradient(0, ROAD1, 0, 1200);
@@ -436,7 +436,7 @@
     g.fillRect(bl + 60, BASE - 110, br - bl - 120, 80);
     g.fillStyle = '#e9d9b8';
     g.font = '600 20px "Barlow Condensed", sans-serif';
-    g.fillText('A P O T H E K E', bl + 180, BASE - 118);
+    g.fillText('A P T E K A', bl + 180, BASE - 118);
     G.glow(g, bl + 150, BASE - 125, 30, [60, 255, 120], 0.6);
   }
   function drawRightFacade(g, r) {
@@ -513,6 +513,36 @@
     const rr = g.createLinearGradient(0, -8, 0, 110);
     rr.addColorStop(0, 'rgba(255,40,30,0.35)'); rr.addColorStop(1, 'rgba(255,40,30,0)');
     g.fillStyle = rr; g.fillRect(-134, -8, 16, 110);
+    g.restore();
+  }
+
+  function drawBus(g, x, y, t) {
+    // articulated city bus (Gliwice runs buses, not trams, since 2009)
+    const L = 1100, H = 150;
+    g.save();
+    const body = g.createLinearGradient(0, y - H, 0, y);
+    body.addColorStop(0, '#d7dce2'); body.addColorStop(0.62, '#aeb6c0'); body.addColorStop(0.63, '#1f2a36'); body.addColorStop(1, '#141b24');
+    g.fillStyle = body;
+    G.roundRect(g, x, y - H, L, H - 22, 14); g.fill();
+    g.fillStyle = '#0c0f13'; g.fillRect(x + 540, y - H, 18, H - 22); // articulation bellows
+    for (let k = 0; k < 10; k++) {
+      const wx = x + 36 + k * 104 + (k > 4 ? 20 : 0);
+      const wg = g.createLinearGradient(0, y - H + 14, 0, y - H + 80);
+      wg.addColorStop(0, 'rgba(255,248,230,0.95)'); wg.addColorStop(1, 'rgba(236,220,186,0.85)');
+      g.fillStyle = wg; g.fillRect(wx, y - H + 14, 84, 64);
+      if ((k * 5) % 3 === 0) { g.fillStyle = 'rgba(30,26,22,0.8)'; g.beginPath(); g.arc(wx + 34, y - H + 48, 10, 0, U.TAU); g.fill(); g.fillRect(wx + 22, y - H + 56, 24, 22); }
+    }
+    g.fillStyle = '#ffb35a'; g.font = '600 22px "Barlow Condensed", sans-serif'; g.textAlign = 'left';
+    g.fillText('4  CENTRUM', x + 18, y - H + 8 + 0);
+    g.fillStyle = '#050505';
+    [x + 160, x + 460, x + 900].forEach((wx) => { g.beginPath(); g.arc(wx, y - 16, 26, 0, U.TAU); g.fill(); });
+    G.glow(g, x + 8, y - 40, 90, [255, 250, 230], 0.8);
+    g.restore();
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    const rf = g.createLinearGradient(0, y, 0, y + 110);
+    rf.addColorStop(0, 'rgba(255,240,210,0.22)'); rf.addColorStop(1, 'rgba(255,240,210,0)');
+    g.fillStyle = rf; g.fillRect(x, y, L, 110);
     g.restore();
   }
 

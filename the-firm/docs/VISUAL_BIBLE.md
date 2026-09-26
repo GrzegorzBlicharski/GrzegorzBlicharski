@@ -48,8 +48,10 @@ Ink `#07080b` · Paper `#f1ece2` · Brass `#c9a96b` (the firm) · Signal red `#b
 Paper has texture, weight, a slight rotation, a second sheet beneath it. Each kind has its own typography: KRS registry extract, newspaper, letterhead, board minutes with stamp and signatures, data-room index, printed email. Polish originals with a PL/EN toggle. Evidence is a highlighter stroke.
 
 ## Cities
-- **Munich** — low, wide skyline; twin onion domes; TV tower; pitched roofs; blue-and-white tram; Apotheke sign. Cold dawn rain.
-- **Warsaw** — the Palace of Culture floodlit against orange low clouds; glass towers with spires; yellow-and-red tram; KANTOR / APTEKA / BAR MLECZNY neon. Heavy night rain and lightning.
+- **Gliwice (home)** — the wooden radio tower, the Rynek town-hall helm, gothic brick spires, mine headframes and chimneys on the horizon, one modern glass office tower. Buses, not trams. APTEKA sign. Cold dawn rain; warm amber evenings.
+- **Wrocław** — the Oder with smeared reflections and rain rings, a green steel arch bridge, the cathedral's twin spires on Ostrów Tumski floodlit against orange low cloud, one tall tower, blue-and-white trams, KANTOR / APTEKA / BAR MLECZNY neon.
+- **Between them** — InterCity at night: catenary masts, village lights, a cooling tower, a station flashing past.
+- **Germany** (later chapters) must never look like Poland: Munich keeps its twin domes and TV tower; Hamburg, Köln, Frankfurt each get their own silhouette and weather.
 
 ## Motion
 Life, not spectacle: rain, drips running down glass, steam, blinking aviation lights, traffic streaks, breathing, blinking. Transitions are fades, dollies and short travel sequences — never slides or bounces.

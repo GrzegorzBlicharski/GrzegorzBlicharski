@@ -14,8 +14,8 @@
       const win = { lit: 0.14, warm: [255, 196, 120], wa: 0.75, cw: 3, ch: 4, gx: 4, gy: 5 };
       const body = (k) => U.rgba(U.mix([34, 40, 50], [90, 96, 108], k), 1);
       this.clouds = G.cloudTexture(VW * 2.2, 600, 5, { n: 220, col: [150, 160, 176], a: 0.16, rmin: 80, rmax: 260 });
-      this.far = G.skyline({ w: VW + 1000, h: 900, base: 540, seed: 121, minW: 26, maxW: 80, minH: 8, maxH: 40, gap: 10, pitched: 0.6, body: body(0.55), fog: [100, 106, 118], fogBottom: 0.45, fogTop: 0.3, win: Object.assign({}, win, { lit: 0.08 }), landmarks: [G.lm.tvTower(1500, 300, body(0.55), 0.95)], below: body(0.6), q: q * 0.6 });
-      this.mid = G.skyline({ w: VW + 1000, h: 900, base: 610, seed: 133, minW: 30, maxW: 95, minH: 20, maxH: 80, gap: 8, pitched: 0.75, body: body(0.3), edge: 'rgba(150,160,175,0.22)', fog: [84, 90, 102], fogBottom: 0.35, win, landmarks: [G.lm.twinDomes(640, 175, body(0.3), 1.25), G.lm.church(380, 100, body(0.3), 1), G.lm.church(1020, 90, body(0.3), 0.9)], groundGlow: [255, 170, 90], groundGlowA: 0.25, below: body(0.35), q: q * 0.7 });
+      this.far = G.skyline({ w: VW + 1000, h: 900, base: 540, seed: 121, minW: 26, maxW: 80, minH: 8, maxH: 40, gap: 10, pitched: 0.6, body: body(0.55), fog: [100, 106, 118], fogBottom: 0.45, fogTop: 0.3, win: Object.assign({}, win, { lit: 0.08 }), landmarks: [G.lm.radioTower(1500, 300, body(0.55), 0.95)], below: body(0.6), q: q * 0.6 });
+      this.mid = G.skyline({ w: VW + 1000, h: 900, base: 610, seed: 133, minW: 30, maxW: 95, minH: 20, maxH: 80, gap: 8, pitched: 0.75, body: body(0.3), edge: 'rgba(150,160,175,0.22)', fog: [84, 90, 102], fogBottom: 0.35, win, landmarks: [G.lm.townHall(640, 175, body(0.3), 1.25), G.lm.church(380, 100, body(0.3), 1), G.lm.church(1020, 90, body(0.3), 0.9)], groundGlow: [255, 170, 90], groundGlowA: 0.25, below: body(0.35), q: q * 0.7 });
       this.room = F.offscreen(VW + 500, VH + 300, q, (g) => { g.translate(250, 150); paintOffice(g); });
       this.fore = F.offscreen(VW + 600, VH + 300, q, (g) => { g.translate(300, 150); paintForeground(g); });
       this.glass = new G.GlassDrops([{ x: BW.x0, y: BW.y0, w: BW.x1 - BW.x0, h: BW.y1 - BW.y0 }], { beads: 1100, drips: 14, light: [205, 215, 232], seed: 51, scale: 0.9 });
@@ -150,29 +150,47 @@
     g.fillStyle = 'rgba(255,220,170,0.12)'; g.fillRect(190, 560, 140, 1.5);
     g.fillStyle = 'rgba(180,120,60,0.55)'; g.beginPath(); g.ellipse(212, 545, 12, 16, 0, 0, U.TAU); g.fill(); g.fillRect(208, 520, 8, 14);
     g.fillStyle = 'rgba(255,240,220,0.35)'; g.fillRect(206, 534, 2, 14);
-    // executive desk (dark walnut) — perspective slab
-    const dk = g.createLinearGradient(0, 610, 0, 760);
-    dk.addColorStop(0, '#3b2a1c'); dk.addColorStop(1, '#1a110a');
+    // executive desk — walnut, leather inlay, brass edge
+    const dk = g.createLinearGradient(0, 610, 0, 790);
+    dk.addColorStop(0, '#3e2c1d'); dk.addColorStop(1, '#170f09');
     G.quad(g, [[360, 612], [940, 612], [1000, 660], [300, 660]], '#4a3523');
-    g.fillStyle = 'rgba(255,220,170,0.2)'; g.fillRect(360, 612, 580, 1.5);
-    G.quad(g, [[300, 660], [1000, 660], [1000, 790], [300, 790]], dk);
-    g.fillStyle = 'rgba(0,0,0,0.3)'; g.fillRect(640, 668, 4, 118);
-    // leather blotter, papers, pen, frame
+    G.quad(g, [[400, 618], [900, 618], [950, 654], [350, 654]], '#2a1c12');          // leather inlay
+    g.fillStyle = 'rgba(210,170,100,0.55)'; g.fillRect(300, 659, 700, 2);              // brass edge
+    g.fillStyle = 'rgba(255,220,170,0.22)'; g.fillRect(360, 612, 580, 1.5);
+    G.quad(g, [[300, 661], [1000, 661], [1000, 790], [300, 790]], dk);
+    // front panel insets + grain
+    g.strokeStyle = 'rgba(0,0,0,0.45)'; g.lineWidth = 2;
+    [[318, 676, 300, 98], [682, 676, 300, 98]].forEach(([x, y, w, h]) => { g.strokeRect(x, y, w, h); g.strokeStyle = 'rgba(255,210,160,0.08)'; g.strokeRect(x + 2, y + 2, w, h); g.strokeStyle = 'rgba(0,0,0,0.45)'; });
+    const gr0 = U.rng(22);
+    g.strokeStyle = 'rgba(0,0,0,0.16)'; g.lineWidth = 1;
+    for (let k = 0; k < 18; k++) { const y = 666 + gr0() * 120; g.beginPath(); g.moveTo(300, y); g.bezierCurveTo(500, y + 4, 800, y - 4, 1000, y + 2); g.stroke(); }
+    // lamp light raking the desk front
+    const rk = g.createRadialGradient(470, 640, 10, 470, 660, 320);
+    rk.addColorStop(0, 'rgba(255,200,140,0.18)'); rk.addColorStop(1, 'rgba(255,200,140,0)');
+    g.fillStyle = rk; g.fillRect(300, 612, 700, 180);
+    // blotter, contract with tabs, fountain pen, frame, stacked files
     G.quad(g, [[520, 622], [760, 622], [780, 650], [500, 650]], '#12100e');
     G.quad(g, [[560, 626], [650, 626], [656, 646], [552, 646]], '#e9e3d6');
-    g.fillStyle = '#c9a96b'; g.fillRect(680, 634, 60, 2);
+    ['#b3322b', '#2b4fa8', '#c9a96b'].forEach((c, i) => { g.fillStyle = c; g.fillRect(650, 628 + i * 5, 6, 3); });
+    g.fillStyle = '#0d0d0f'; g.fillRect(680, 632, 60, 3); g.fillStyle = '#c9a96b'; g.fillRect(730, 632, 12, 3);
     G.quad(g, [[850, 596], [900, 596], [902, 628], [848, 628]], '#15120f');
     g.fillStyle = 'rgba(200,190,170,0.3)'; g.fillRect(854, 600, 42, 24);
+    [0, 1, 2, 3].forEach((k) => { g.fillStyle = k % 2 ? '#e3dccd' : '#d8d0bf'; G.quad(g, [[790, 624 - k * 5], [840, 624 - k * 5], [846, 634 - k * 5], [786, 634 - k * 5]], k % 2 ? '#e3dccd' : '#5e2a22'); });
+    // chair — tufted leather, backlit rim
+    g.fillStyle = '#0c0907';
+    G.roundRect(g, 556, 455, 138, 165, 24); g.fill();
+    g.fillStyle = 'rgba(255,255,255,0.03)';
+    for (let r2 = 0; r2 < 3; r2++) for (let c2 = 0; c2 < 3; c2++) { g.beginPath(); g.arc(584 + c2 * 41, 490 + r2 * 40, 3, 0, U.TAU); g.fill(); }
+    g.strokeStyle = 'rgba(190,205,230,0.2)'; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(580, 456); g.lineTo(670, 456); g.stroke();
+    g.strokeStyle = 'rgba(190,205,230,0.12)';
+    g.beginPath(); g.moveTo(694, 470); g.lineTo(694, 600); g.stroke();
     // brass desk lamp
     g.strokeStyle = '#8a6a3a'; g.lineWidth = 4;
     g.beginPath(); g.moveTo(430, 625); g.lineTo(440, 530); g.lineTo(470, 505); g.stroke();
     g.fillStyle = '#8a6a3a'; g.beginPath(); g.ellipse(430, 626, 26, 6, 0, 0, U.TAU); g.fill();
     g.fillStyle = '#2c2116'; g.beginPath(); g.moveTo(438, 492); g.lineTo(492, 492); g.lineTo(502, 516); g.lineTo(428, 516); g.closePath(); g.fill();
     G.pool(g, 470, 622, 180, 22, [255, 205, 150], 0.4);
-    // executive chair behind desk (backlit)
-    g.fillStyle = '#0c0a09';
-    G.roundRect(g, 560, 470, 130, 150, 20); g.fill();
-    g.fillStyle = 'rgba(180,195,220,0.12)'; g.fillRect(566, 470, 118, 2);
     // abstract painting over the bookshelf edge? — small framed print on column
     G.quad(g, [[1236, 280], [1258, 282], [1258, 380], [1236, 382]], '#20180f');
   }
