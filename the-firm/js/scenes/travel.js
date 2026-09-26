@@ -186,12 +186,15 @@
 
   // ------------------------------------------------------------------ TRAIN (InterCity Gliwice → Wrocław, night, window seat)
   F.defineScene('train', {
-    enter() {
+    enter(o) {
+      o = o || {};
+      this.stationName = o.station || 'OPOLE GŁÓWNE';
+      this.day = !!o.day;
       const q = F.quality();
       const r = U.rng(17);
       // far landscape strip: low hills, villages, a power plant, repeating horizontally
       this.land = F.offscreen(VW * 2, 400, q * 0.6, (g) => {
-        g.fillStyle = '#07080b';
+        g.fillStyle = o.day ? '#3c463e' : '#07080b';
         g.beginPath(); g.moveTo(0, 400);
         for (let x = 0; x <= VW * 2; x += 40) g.lineTo(x, 190 + Math.sin(x * 0.004) * 26 + Math.sin(x * 0.013) * 9);
         g.lineTo(VW * 2, 400); g.closePath(); g.fill();
@@ -211,7 +214,8 @@
       this.glass = new G.GlassDrops([{ x: 300, y: 130, w: 1320, h: 560 }], { beads: 600, drips: 0, light: [170, 170, 190], seed: 5, scale: 1.1 });
       this.streaks = [];
       F.camSet(VW / 2, VH / 2, 1); F.cam.par = 10; F.cam.drift = 1.1;
-      F.grade.tint = [90, 110, 150]; F.grade.tintA = 0.2; F.grade.vignette = 0.7;
+      F.grade.tint = o.day ? [200, 190, 170] : [90, 110, 150]; F.grade.tintA = o.day ? 0.1 : 0.2; F.grade.vignette = 0.7;
+      F.hotspots = o.laptop ? [{ id: 'laptop', d: 1, x: 640, y: 680, w: 440, h: 290, label: 'Laptop', sub: 'Matter file · draft the claim', onClick: () => F.emit('train:laptop') }] : [];
       F.audio.mix({ cabin: 0.5, rain: 0.12, rainGlass: 0.1, pad: 0.35 }, 2);
       F.audio.chord('night');
     },
@@ -227,7 +231,8 @@
     draw(g, dt, t) {
       F.layer(0.05, 0.1);
       const sky = g.createLinearGradient(0, 0, 0, VH);
-      sky.addColorStop(0, '#05060a'); sky.addColorStop(0.6, '#141620'); sky.addColorStop(1, '#241c1c');
+      if (this.day) { sky.addColorStop(0, '#8ea3b8'); sky.addColorStop(0.6, '#c3c8c6'); sky.addColorStop(1, '#d8cdb8'); }
+      else { sky.addColorStop(0, '#05060a'); sky.addColorStop(0.6, '#141620'); sky.addColorStop(1, '#241c1c'); }
       g.fillStyle = sky; g.fillRect(-300, -300, VW + 600, VH + 600);
       // far landscape (slow)
       F.layer(0.15, 0.2);
@@ -243,7 +248,7 @@
         g.fillStyle = '#16171b'; g.fillRect(st, 560, 2400, 90);
         for (let k = 0; k < 12; k++) { const x = st + k * 200; g.fillStyle = '#0b0b0d'; g.fillRect(x, 380, 6, 180); G.glow(g, x + 3, 380, 60, [255, 236, 200], 0.8); }
         g.fillStyle = '#1f4f9a'; g.fillRect(st + 700, 470, 260, 44);
-        g.fillStyle = '#fff'; g.font = '600 30px "Barlow Condensed", sans-serif'; g.textAlign = 'left'; g.fillText('OPOLE GŁÓWNE', st + 718, 503);
+        g.fillStyle = '#fff'; g.font = '600 30px "Barlow Condensed", sans-serif'; g.textAlign = 'left'; g.fillText(this.stationName, st + 718, 503);
       }
       // catenary masts whipping by (motion-blurred)
       F.layer(1.1, 1.1);

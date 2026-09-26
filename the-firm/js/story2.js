@@ -210,7 +210,8 @@
         text: 'Die Vertragsstrafe gegenüber Ihrem OEM war für unsere Mandantin bei Vertragsschluss nicht vorhersehbar. <span class="gloss">The penalty owed to your OEM was not foreseeable for our client when the contract was made.</span>' },
       { k: 'notice', need: true, tag: 'the obvious one',
         text: 'Ihre Mängelrüge kam zu spät – sieben Wochen nach der Lieferung. <span class="gloss">Your notice of defects came too late — seven weeks after delivery.</span>' },
-    ].filter((a) => !used[a.k]);
+    ].filter((a) => !used[a.k]).concat(used.general ? [] : [{ k: 'general', need: true, tag: 'no specifics',
+      text: 'Wir bestreiten die Forderung dem Grunde und der Höhe nach. <span class="gloss">We dispute the claim in principle and in amount.</span>' }]);
     for (let round = 0; round < 2; round++) {
       sc.shot('wide', 1.4);
       const opts = pool();
@@ -235,6 +236,9 @@
         sc.shot('hartmann'); K.hartmann.expr = 'amused';
         await say('hartmann', 'Im Automobilbereich? Vertragsstrafen in der Lieferkette sind dort branchenüblich. <span class="gloss">In automotive? Penalties along the supply chain are standard in the industry.</span>');
         await narr('Arguable — but weak in this industry. Foreseeability (art. 74 CISG) is a lever for the negotiation, not a wall.');
+      } else if (a.k === 'general') {
+        sc.shot('hartmann'); K.hartmann.expr = 'amused';
+        await say('hartmann', 'Das bestreitet jeder. Womit? <span class="gloss">Everyone disputes it. On what basis?</span>');
       } else {
         cred--;
         sc.shot('hartmann'); K.hartmann.expr = 'amused';
@@ -320,6 +324,7 @@
     }[outcome];
     const verdict = { settled: 'Client and customer kept — exposure inside the cap', settledHigh: 'Customer kept — at a price', war: 'Argument won, customer lost' }[outcome];
     const notes = F.curriculum.chapterTwoNotes(S);
+    F.curriculum.record(2, notes);
     const p = ui.panel('chapter-end', `
       <div class="ce-inner">
         <div class="c-chapter">Chapter II · Complete</div>
@@ -342,11 +347,12 @@
         <div class="c-chapter ce-sub">The road ahead</div>
         <div class="ce-road">${F.curriculum.CHAPTERS.slice(2, 8).map((c) => `<div><em>${c.n}</em><b>${c.title}</b><span>${c.where}</span></div>`).join('')}<div class="more"><em>…</em><b>XIV · Your Name on the Door</b><span>Gliwice</span></div></div>
         <div class="ce-next"><i>Next</i> Chapter III · <b>Eighty Positions</b> · Gliwice, winter</div>
-        <div class="ce-tease">An industrial client restructures eighty jobs and wants its operations director gone by Friday. This time you advise the employer — and then you meet the employee’s counsel.</div>
-        <button class="ce-btn ce-title-btn">Return to title</button>
+        <div class="ce-tease">A month later Silform calls again: eighty jobs in Hall 2 and a director the board wants gone by Friday. This time you advise the employer — then face two unions and the director’s counsel.</div>
+        <button class="ce-btn ce-next-btn">Continue to Chapter III</button> <button class="ce-btn ce-title-btn">Return to title</button>
       </div>`);
     await F.fx.fade(0, 1600);
     p.node.querySelector('.ce-notes-btn').addEventListener('pointerdown', (e) => { e.stopPropagation(); F.audio.paper(); p.node.classList.add('show-notes'); });
+    p.node.querySelector('.ce-next-btn').addEventListener('pointerdown', (e) => { e.stopPropagation(); p.close(); F.story3.start(); });
     p.node.querySelector('.ce-title-btn').addEventListener('pointerdown', (e) => { e.stopPropagation(); location.href = location.pathname; });
   };
 })(window.F);

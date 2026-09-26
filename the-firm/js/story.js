@@ -19,23 +19,30 @@
   const scene = () => F.scene;
 
   // ================================================================== TITLE
+  const ROMAN = ['', 'I', 'II', 'III', 'IV'];
   story.title = () => {
     F.go('void', { cut: true, holdBlack: true });
+    document.body.classList.remove('veil');
     const saved = F.loadSave();
-    const canContinue = saved && ((S.chapter === 2) || (S.stage && S.stage !== 'arrive'));
+    const canContinue = saved && ((S.chapter >= 2) || (S.stage && S.stage !== 'arrive'));
+    const played = Object.keys(S.career || {}).length;
     const t = F.el('div', 'title-screen', `
       <div class="ts-mark"></div>
       <div class="ts-title">THE FIRM</div>
-      <div class="ts-sub">Gliwice · Wrocław · Stuttgart</div>
+      <div class="ts-sub">Gliwice · Stuttgart · Szczecin · Berlin</div>
+      ${canContinue ? `<div class="ts-controw"><button class="ts-ch ts-cont" data-a="continue"><i>Continue</i><b>Chapter ${ROMAN[S.chapter] || 'I'}</b></button></div>` : ''}
       <div class="ts-chapters">
-        ${canContinue ? `<button class="ts-ch ts-cont" data-a="continue"><i>Continue</i><b>Chapter ${S.chapter === 2 ? 'II' : 'I'}</b></button>` : ''}
         <button class="ts-ch" data-a="1"><i>Chapter I</i><b>The Carbo Deal</b><span>Gliwice → Wrocław · M&amp;A, football, legal German</span></button>
         <button class="ts-ch" data-a="2"><i>Chapter II</i><b>The Line Stops</b><span>Gliwice ↔ Stuttgart · CISG, jurisdiction, negotiating in German</span></button>
+        <button class="ts-ch" data-a="3"><i>Chapter III</i><b>Eighty Positions</b><span>Gliwice · collective redundancy, unions, a director’s exit</span></button>
+        <button class="ts-ch" data-a="4"><i>Chapter IV</i><b>Oder Crossing</b><span>Szczecin → Berlin · Rome I, German dismissal law, court in German</span></button>
       </div>
+      ${played ? '<button class="ts-career" data-a="career">Career file</button>' : ''}
       <div class="ts-note">Headphones recommended · Mouse &amp; keyboard · Tab recalls your objective</div>`);
     document.body.appendChild(t);
     let started = false;
     t.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.ts-career')) { F.audio.init(); story.careerFile(); return; }
       const btn = e.target.closest('.ts-ch');
       if (!btn || started) return;
       started = true;
@@ -44,15 +51,38 @@
       setTimeout(() => t.remove(), 1500);
       const a = btn.dataset.a;
       if (a === 'continue') return story.resume();
-      const keepTrust = S.trust;
+      const keepTrust = S.trust, keepCareer = S.career;
       F.resetSave();
-      Object.assign(S, { chapter: 1, flags: {}, trust: keepTrust || { wendt: 0, jonas: 0, marta: 0, steinhauer: 0 }, findings: {}, redlines: {}, links: {}, readMail: {}, readDocs: {}, stage: 'arrive', time: '07:12', german: {}, ch2: { memo: {} } });
-      if (a === '2') F.story2.start(); else story.opening();
+      Object.assign(S, { chapter: 1, flags: {}, trust: keepTrust || { wendt: 0, jonas: 0, marta: 0, steinhauer: 0 }, career: keepCareer || {}, findings: {}, redlines: {}, links: {}, readMail: {}, readDocs: {}, stage: 'arrive', time: '07:12', german: {}, ch2: { memo: {} } });
+      if (a === '2') F.story2.start(); else if (a === '3') F.story3.start(); else if (a === '4') F.story4.start(); else story.opening();
     });
+  };
+
+  // the career file: every practice note you have earned, grouped by track, weighted toward the target profile
+  story.careerFile = () => {
+    const car = S.career || {};
+    const T = F.curriculum.TRACKS;
+    const by = {};
+    Object.keys(car).forEach((c) => car[c].forEach((n) => { (by[n.track] = by[n.track] || { ok: 0, n: 0, items: [] }); by[n.track].n++; if (n.ok) by[n.track].ok++; by[n.track].items.push(`${n.ok ? '✓' : '○'} ${n.t}`); }));
+    const order = Object.keys(T).filter((k) => by[k]).sort((a, b) => (T[a].tier > T[b].tier ? 1 : T[a].tier < T[b].tier ? -1 : by[b].n - by[a].n));
+    const chapters = Object.keys(car).sort().map((c) => ROMAN[+c.slice(1)]).join(' · ');
+    const p = F.ui.panel('career', `
+      <div class="cf-inner">
+        <div class="c-chapter">Career file</div>
+        <div class="c-chapname">Toward your own firm</div>
+        <div class="cf-sub">Chapters completed: ${chapters || '—'} · target: Polish-German commercial, employment, contracts and sports practice</div>
+        <div class="cf-tracks">${order.map((k) => `<div class="cf-t tier-${T[k].tier}"><div class="cf-h"><b>${T[k].name}</b><i>Tier ${T[k].tier}</i><span>${by[k].ok} / ${by[k].n}</span></div><div class="cf-bar"><em style="width:${Math.round((by[k].ok / by[k].n) * 100)}%"></em></div><div class="cf-items">${by[k].items.join('<br>')}</div></div>`).join('')}</div>
+        <div class="cf-stage">${F.curriculum.STAGES.map((s, i) => `<span class="${i < Math.min(3, 1 + Object.keys(car).length) ? 'done' : ''}">${i + 1} · ${s}</span>`).join('')}</div>
+        <button class="ce-btn cf-close">Close</button>
+      </div>`);
+    document.body.appendChild(p.node);
+    p.node.querySelector('.cf-close').addEventListener('pointerdown', (e) => { e.stopPropagation(); p.close(); });
   };
 
   story.resume = () => {
     if (S.chapter === 2) return F.story2.resume();
+    if (S.chapter === 3) return F.story3.resume();
+    if (S.chapter === 4) return F.story4.resume();
     const st = S.stage;
     if (st === 'review') return story.officeReview();
     if (st === 'evening') return story.officeEvening();
@@ -107,7 +137,7 @@
 
   // office interactions (dispatch by stage)
   F.on('office:phone', async () => {
-    if (S.chapter === 2) return;
+    if (S.chapter !== 1) return;
     const sc = scene();
     if (S.stage === 'arrive') {
       await ui.phone.open('Albrecht', 'Office of Dr. Helena Wendt', [{ text: 'Guten Morgen, and welcome to Adler Wendt.', time: '07:18' }, { text: 'Partner wants you upstairs.', time: '07:19' }, { text: '23rd floor. The stairs by the window.', time: '07:19' }], '07:20');
@@ -123,13 +153,13 @@
   F.on('office:computer', () => F.openComputer());
   F.on('computer:closed', () => { if (scene() && scene().name === 'office') { scene().monitorText = S.stage === 'evening' ? 'doc' : 'login'; } });
   F.on('office:coffee', () => {
-    if (S.chapter === 2) return;
+    if (S.chapter !== 1) return;
     const lines = ['Machine coffee. Bitter enough to count as a decision.', 'Still hot. The only thing on this floor that hasn’t been negotiated.', 'Cold now. You didn’t notice when that happened.'];
     F.audio.tone(200, 0.2, 0.02);
     narr(lines[S.stage === 'evening' ? 2 : (F.time | 0) % 2]).then(() => ui.dialogueClose());
   });
   F.on('office:window', async () => {
-    if (S.chapter === 2) return;
+    if (S.chapter !== 1) return;
     F.inputLocked = true;
     await F.camTween({ x: 900, y: 420, z: 1.45 }, 1.4);
     if (S.stage === 'evening') await narr('Gliwice after dark. The radio tower’s red light, the ring road, somewhere a late bus. People are going home.');
@@ -139,21 +169,21 @@
     F.inputLocked = false;
   });
   F.on('office:file', async () => {
-    if (S.chapter === 2) return;
+    if (S.chapter !== 1) return;
     if (S.stage === 'arrive') { await narr('A sealed folder. PROJEKT CARBO — ŚCIŚLE POUFNE · STRENG VERTRAULICH. Not yours to open. Not yet.'); ui.dialogueClose(); return; }
     const sent = await F.openRedline();
     if (sent) F.emit('redline:sent');
   });
   F.on('office:stairs', async () => {
-    if (S.chapter === 2) return;
+    if (S.chapter !== 1) return;
     if (S.stage === 'arrive') {
       if (!F.flag('readMsg')) { await narr('Floor 10 is partner floor. Nobody goes up there uninvited. Your phone buzzed a moment ago.'); ui.dialogueClose(); return; }
       story.partner();
     } else { await narr(S.stage === 'evening' ? 'The partner floor is dark. Dr. Wendt left at six. Her light is still on.' : 'She said by five. Going back up empty-handed is not a plan.'); ui.dialogueClose(); }
   });
-  F.on('office:jonas', () => { if (S.chapter !== 2) story.jonas(); });
+  F.on('office:jonas', () => { if (S.chapter === 1) story.jonas(); });
   F.on('office:jonasEve', async () => {
-    if (S.chapter === 2) return;
+    if (S.chapter !== 1) return;
     F.inputLocked = true;
     await F.camTween({ x: 560, y: 420, z: 1.9 }, 1.4);
     if (!F.flag('jonasEveTalk')) {
@@ -171,7 +201,7 @@
     F.inputLocked = false;
   });
   F.on('office:board', async () => {
-    if (S.chapter === 2) return;
+    if (S.chapter !== 1) return;
     await F.openBoard();
     if (F.flag('boardSolved') && !F.flag('martaCalled')) story.martaCall();
   });
@@ -534,6 +564,8 @@
       walked: 'Steinhauer walks. Three weeks later, a Düsseldorf fund announces it is acquiring KS Carbo. Its lawyers never ask about folder 7.3.',
       signed: 'The deal signs at 10:00 as drafted. In the spring, Odra Capital collects the club’s television money. The warranty claim fails: everything was “disclosed”.',
     }[outcome] || '';
+    const notes1 = F.curriculum.chapterOneNotes(S);
+    F.curriculum.record(1, notes1);
     const verdict = { protected: 'Client protected', 'protected-lease': 'Client protected — one risk open', discount: 'Deal closed — risk priced, not removed', walked: 'Client walked away', signed: 'Deal closed badly' }[outcome] || '';
     const p = ui.panel('chapter-end', `
       <div class="ce-inner">
@@ -551,7 +583,7 @@
       </div>
       <div class="ce-notes">
         <div class="c-chapter">Practice notes · Chapter I</div>
-        <div class="ce-list">${F.curriculum.chapterOneNotes(S).map((n) => `<div class="ce-note ${n.ok ? 'ok' : 'miss'}"><i>${n.ok ? '✓' : '○'}</i><div><b>${n.t}</b><span class="ce-track">${(F.curriculum.TRACKS[n.track] || {}).name || ''} · Tier ${(F.curriculum.TRACKS[n.track] || {}).tier || ''}</span><p>${n.d}</p></div></div>`).join('')}</div>
+        <div class="ce-list">${notes1.map((n) => `<div class="ce-note ${n.ok ? 'ok' : 'miss'}"><i>${n.ok ? '✓' : '○'}</i><div><b>${n.t}</b><span class="ce-track">${(F.curriculum.TRACKS[n.track] || {}).name || ''} · Tier ${(F.curriculum.TRACKS[n.track] || {}).tier || ''}</span><p>${n.d}</p></div></div>`).join('')}</div>
         <div class="c-chapter ce-sub">Career path</div>
         <div class="ce-stages">${F.curriculum.STAGES.map((st, i) => `<div class="${i === 0 ? 'done' : i === 1 ? 'now' : ''}"><em>${i + 1}</em>${st}</div>`).join('')}</div>
         <div class="c-chapter ce-sub">The road ahead</div>
@@ -565,7 +597,6 @@
     p.node.querySelector('.ce-next-btn').addEventListener('pointerdown', (e) => { e.stopPropagation(); p.close(); F.story2.start(); });
     p.node.querySelector('.ce-title-btn').addEventListener('pointerdown', (e) => {
       e.stopPropagation();
-      F.resetSave();
       location.href = location.pathname;
     });
   };

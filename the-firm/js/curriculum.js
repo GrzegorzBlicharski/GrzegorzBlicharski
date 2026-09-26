@@ -39,10 +39,10 @@
       brief: 'A Stuttgart investor buys a Gliwice football club. The warranty, the disclosure letter and the liability cap only fail together.' },
     { n: 'II', title: 'The Line Stops', where: 'Gliwice ↔ Stuttgart', stage: 2, status: 'playable', tracks: ['contracts', 'plde', 'german', 'litigation'],
       brief: 'A German manufacturer stops production and blames your Polish supplier. €18 million, German law, Polish documents, English emails. Which law, which court, which clause?' },
-    { n: 'III', title: 'Eighty Positions', where: 'Gliwice · winter', stage: 3, tracks: ['employment', 'advisory'],
-      brief: 'An industrial client restructures eighty jobs and wants its operations director out by Friday. Advise the employer — then face the employee’s counsel.' },
-    { n: 'IV', title: 'Oder Crossing', where: 'Szczecin ↔ Berlin', stage: 3, tracks: ['employment', 'plde', 'german'],
-      brief: 'Polish drivers, a German logistics group, two labour-law systems and one contract that forgot to choose between them.' },
+    { n: 'III', title: 'Eighty Positions', where: 'Gliwice · winter', stage: 3, status: 'playable', tracks: ['employment', 'advisory'],
+      brief: 'Silform cuts eighty jobs in Hall 2 and wants its operations director out by Friday. Advise the employer, consult two unions, then face the director’s counsel.' },
+    { n: 'IV', title: 'Oder Crossing', where: 'Szczecin ↔ Berlin', stage: 3, status: 'playable', tracks: ['employment', 'plde', 'german', 'litigation'],
+      brief: 'A Szczecin dispatcher is dismissed by email by a Berlin logistics company. Act for the employee: Rome I, a German labour court, a conciliation hearing in German.' },
     { n: 'V', title: 'Fair Trade', where: 'Poznań ↔ Berlin', stage: 4, tracks: ['commercial', 'contracts', 'plde'],
       brief: 'A family distributor is terminated by its German principal after fourteen years. Distribution or agency? The answer decides the money.' },
     { n: 'VI', title: 'No Translation', where: 'Berlin', stage: 4, tracks: ['german', 'commercial', 'data'],
@@ -112,5 +112,80 @@
     ];
   }
 
-  F.curriculum = { TRACKS, STAGES, CHAPTERS, chapterOneNotes, chapterTwoNotes };
+
+  function chapterThreeNotes(S) {
+    const c3 = S.ch3 || {}, W = F.WORK3, ok = (id) => F.workOk(W, id), sc = F.scoreWork(W);
+    return [
+      { track: 'employment', ok: ok('scope'), t: 'Counting a collective redundancy',
+        d: 'Threshold by headcount (10% for 100–299 staff), a 30-day window, agreements counting once there are five. Slicing a decided plan into tranches is how employers lose in court.' },
+      { track: 'employment', ok: ok('steps'), t: 'Consult, agree, notify, wait',
+        d: 'Written notice to every company union with a copy to the labour office; up to 20 days to agree, otherwise regulations; notice to the PUP; no employment ends until 30 days later.' },
+      { track: 'employment', ok: ok('criteria'), t: 'Criteria a court will accept',
+        d: 'Age is direct discrimination; sick days risk indirect discrimination. Objective, written criteria tied to the future organisation — applied the same way to everyone.' },
+      { track: 'employment', ok: ok('protected'), t: 'Protected employees survive the list',
+        d: 'Pregnancy, pre-retirement, parental leave and union office: in a collective redundancy only a change of terms, with a compensatory allowance if pay falls.' },
+      { track: 'employment', ok: ok('severance'), t: 'Statutory severance',
+        d: 'One, two or three months’ pay for under 2, 2–8 or over 8 years with this employer — capped at fifteen times the minimum wage.' },
+      { track: 'company', ok: ok('director'), t: 'Board member with an employment contract',
+        d: 'Removal from the board (art. 203 KSH) does not end the employment; the supervisory board or a shareholders’ proxy signs the termination (art. 210 §1 KSH), with a concrete reason.' },
+      { track: 'negotiation', ok: c3.union === 'agreement', t: 'Consultation is a negotiation',
+        d: 'Withdraw what can’t be defended, give protection where the law already gives it, and bring something real to the table: the E-drive transfers turned 80 into 58.' },
+      { track: 'contracts', ok: !!S.flags.c3nc, t: 'Keep the non-compete when it matters',
+        d: 'A post-employment non-compete costs at least 25% of pay for its duration (art. 101² KP). Against a director who knows your process and joins a competitor, that is cheap.' },
+      { track: 'advisory', ok: sc.cited >= 5 && !S.flags.c3authority && c3.call === 0, t: 'Advise before anyone signs',
+        d: 'Stop the signature, get the documents, cite them — and never promise in a union room what the client hasn’t authorised.' },
+    ];
+  }
+
+  function chapterFourNotes(S) {
+    const c4 = S.ch4 || {}, W = F.WORK4, ok = (id) => F.workOk(W, id), asked = c4.asked || [];
+    return [
+      { track: 'advisory', ok: ['where', 'br', 'before', 'who'].every((k) => asked.includes(k)), t: 'The intake decides the case',
+        d: 'Where he really works, whether the works council was heard, what happened before, who stayed: four questions, four grounds. What you don’t ask about isn’t in the claim.' },
+      { track: 'litigation', ok: ok('frist'), t: 'Three weeks — file anyway',
+        d: 'The §4 KSchG deadline runs from receipt of a written notice. Even when the notice is void, file within three weeks: never stake the client’s case on a deadline not running.' },
+      { track: 'plde', ok: ok('recht'), t: 'Rome I, art. 8 — choice of law with a floor',
+        d: 'A chosen law stands, but it cannot take away the mandatory protection of the habitual place of work. Three days in Berlin out of five brought in the KSchG, §623 BGB and §102 BetrVG.' },
+      { track: 'plde', ok: ok('gericht'), t: 'The employee chooses the court',
+        d: 'Brussels I bis protects the weaker party: employer’s domicile or habitual workplace (art. 21); a pre-dispute forum clause can only add options (art. 23).' },
+      { track: 'employment', ok: ok('gruende'), t: 'German dismissal law, point by point',
+        d: 'Written form (§623 BGB) and the works council hearing (§102 BetrVG) each make a dismissal void; social justification and selection (§1 KSchG) and §612a BGB build the price.' },
+      { track: 'advisory', ok: ok('kosten'), t: 'Costs and the client’s real goal',
+        d: 'Each side pays its own lawyer at first instance (§12a ArbGG). Kamil wanted money and a reference, not his job back — the strategy follows the client.' },
+      { track: 'german', ok: (c4.lev || 0) >= 3, t: 'Legal German — in court',
+        d: 'Article, fact, consequence — and let the judge’s “Das ist nach meiner vorläufigen Einschätzung eindeutig” do the rest. Translations were veiled: from here on you work in German.' },
+      { track: 'negotiation', ok: c4.outcome === 'strong' || c4.outcome === 'fair', t: 'Leverage with a shelf life',
+        d: 'The employer could simply dismiss again, properly. Void notices buy time, and time is money: settle while the defects are worth something.' },
+      { track: 'advisory', ok: !S.flags.c4authority && c4.outcome !== 'kammer', t: 'Advise; the client decides',
+        d: 'Ask for a break, explain in the client’s language, recommend — and let him say yes.' },
+    ];
+  }
+
+  // side-by-side comparisons shown at the end of Chapters III and IV
+  const compareThree = [
+    ['', 'Poland', 'Germany'],
+    ['Collective dismissal', 'Act of 13 March 2003 — 10 / 10% / 30 within 30 days (employer ≥ 20)', '§17 KSchG — notification to the Agentur für Arbeit; thresholds by establishment size'],
+    ['Consultation partner', 'Company trade unions (else employee representatives)', 'Works council (Betriebsrat)'],
+    ['Social plan', 'No statutory social plan; agreement or regulations', 'Interessenausgleich and Sozialplan (§§111–112 BetrVG)'],
+    ['Who goes', 'Objective criteria set by the employer / agreement', 'Social selection: service, age, dependants, severe disability (§1(3) KSchG)'],
+    ['Severance', 'Statutory: 1–3 months’ pay (art. 8 of the Act)', 'No general statutory right; social plan or settlement'],
+  ];
+  const compareFour = [
+    ['', 'Poland', 'Germany'],
+    ['Form of notice', 'Written form required, but an oral notice is still effective (claim under art. 45 KP)', 'Written form or the notice is void (§623 BGB)'],
+    ['Deadline to sue', '21 days (art. 264 KP)', '3 weeks (§4 KSchG)'],
+    ['Employee body', 'Union consulted for indefinite contracts (art. 38 KP)', 'Works council heard or the dismissal is invalid (§102 BetrVG)'],
+    ['Justification', 'Real, concrete reason (art. 30 §4 KP)', 'Social justification + social selection (§1 KSchG)'],
+    ['Lawyers’ costs, 1st instance', 'Loser pays (with statutory limits)', 'Each side pays its own (§12a ArbGG)'],
+  ];
+
+  // career file: practice notes survive between chapters (and title-screen restarts)
+  function record(ch, notes) {
+    const S = F.state;
+    S.career = S.career || {};
+    S.career['c' + ch] = notes.map((n) => ({ track: n.track, ok: !!n.ok, t: n.t }));
+    F.save();
+  }
+
+  F.curriculum = { TRACKS, STAGES, CHAPTERS, chapterOneNotes, chapterTwoNotes, chapterThreeNotes, chapterFourNotes, compareThree, compareFour, record };
 })(window.F);

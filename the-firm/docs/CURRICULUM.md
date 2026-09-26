@@ -4,7 +4,7 @@
 
 Every design decision answers one question: *does this materially contribute to that profile?* If yes, go deep. If no, teach only what broad professional competence needs.
 
-> Status: **Chapters I and II are playable.** Everything else below is the designed roadmap. The data model lives in `js/curriculum.js` (tracks, tiers, stages, chapters, practice notes) so new chapters plug into the same system.
+> Status: **Chapters I–IV are playable.** Everything else below is the designed roadmap. The data model lives in `js/curriculum.js` (tracks, tiers, stages, chapters, practice notes) so new chapters plug into the same system.
 
 ---
 
@@ -76,8 +76,8 @@ Client acquisition and retention, positioning and specialisation, networking and
 |---|---|---|---|---|
 | I | **The Carbo Deal** *(playable)* | Gliwice → Wrocław | 1→2 | contracts, M&A fundamentals, football business, negotiation, PL–DE, legal German |
 | II | **The Line Stops** *(playable)* | Gliwice ↔ Stuttgart | 2 | supply contract, quality dispute, applicable law & forum, German law, Vertragsprüfung |
-| III | Eighty Positions | Gliwice · winter | 3 | Polish employment: restructuring, executive dismissal, protected employees |
-| IV | Oder Crossing | Szczecin ↔ Berlin | 3 | cross-border employment, applicable law for employment contracts |
+| III | **Eighty Positions** *(playable)* | Gliwice · winter | 3 | Polish employment: restructuring, executive dismissal, protected employees |
+| IV | **Oder Crossing** *(playable)* | Szczecin ↔ Berlin | 3 | cross-border employment, applicable law for employment contracts |
 | V | Fair Trade | Poznań ↔ Berlin | 4 | distribution vs agency, termination, compensation |
 | VI | No Translation | Berlin | 4 | working in German; GmbH; data |
 | VII | Fog Terminal | Gdańsk ↔ Hamburg | 5 | logistics contracts, force majeure, termination under pressure |
@@ -108,3 +108,27 @@ Client acquisition and retention, positioning and specialisation, networking and
 - **Client advisory:** revenue concentration (41%) decides the strategy; never commit client money without instructions; no early reassurance.
 - **Legal German, oral:** presenting a position to German opposing counsel; register (Frau Kollegin, kollegiale Grüße); arguments are only available if the supporting document was found.
 - **Work product:** a Stellungnahme answering five questions, each cited to a document; the partner debriefs every miss on the flight.
+
+## 9. What Chapter III trains (implemented)
+- **Counting a collective redundancy** (Act of 13 March 2003, art. 1): headcount thresholds, the 30-day window, terminations by agreement counting from five; why splitting a decided plan into tranches fails (Directive 98/59/EC, CJEU Junk C-188/03).
+- **Procedure:** written notice to every company union with a copy to the district labour office, up to 20 days to agree, regulations if no agreement, notice to the PUP, the 30-day waiting period (arts. 2–5).
+- **Selection criteria:** age as direct discrimination (art. 18³a KP), absence-based criteria as indirect-discrimination risk (CJEU Ruiz Conejero C-270/16), objective criteria tied to the future organisation.
+- **Protected employees survive the list** (art. 5 of the Act): pregnancy (art. 177 KP), pre-retirement (art. 39 KP), parental leave (art. 186⁸ KP), union board members (art. 32 Trade Unions Act) — change of terms only, compensatory allowance.
+- **Statutory severance** (art. 8): 1 / 2 / 3 months, service with this employer only, cap of 15 × minimum wage.
+- **Board member with an employment contract:** removal (art. 203 KSH) vs termination; the supervisory board or a shareholders’ proxy signs (art. 210 §1 KSH); concrete reason (art. 30 §4 KP); the one-month window for summary dismissal (art. 52 §2 KP); non-compete compensation (art. 101² §3 KP).
+- **Negotiation:** a union consultation played in Polish — withdraw the indefensible, give what the law already gives, bring real mitigation (22 transfers turned 80 into 58), stay inside the client’s authority.
+- **Comparison table:** Polish collective redundancy vs German §17 KSchG, works council, social plan and social selection.
+
+## 10. What Chapter IV trains (implemented)
+- **The intake as a skill:** four questions on the embankment decide which facts (and documents) exist for the claim.
+- **Rome I, art. 8:** a valid choice of Polish law with a floor of German mandatory protection at the habitual workplace (CJEU Koelzsch C-29/10).
+- **Brussels I bis, arts. 21–23:** the employee chooses between the employer’s domicile and the habitual workplace; a pre-dispute forum clause can only add options.
+- **German dismissal law:** written form (§623 BGB), works-council hearing (§102 BetrVG), social justification and social selection (§1 KSchG), notice periods (§622 BGB), victimisation (§612a BGB), the three-week deadline (§§4, 7 KSchG).
+- **Procedure and costs:** conciliation hearing before the presiding judge alone (§54 ArbGG) within two weeks (§61a), each side bears its own fees at first instance (§12a), the half-salary-per-year benchmark as practice, not statute.
+- **Legal German in court, with fading assistance:** translations are veiled from this chapter on (hover or hold G to reveal).
+- **Client authority:** ask for a break, advise in the client’s language, let the client decide.
+- **Work product:** a German Klage draft (with the standard §4 KSchG motion), each answer cited to a document.
+- **Comparison table:** Polish vs German dismissal — form, deadline, employee body, justification, costs.
+
+## 11. Career file
+Practice notes from every completed chapter are stored in the save (`S.career`) and survive restarts. The title screen’s **Career file** groups them by track (Tier S first) and shows the career stage reached — the running record of progress toward the target profile.

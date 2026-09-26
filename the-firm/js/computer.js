@@ -2,7 +2,9 @@
 (function (F) {
   'use strict';
   const el = F.el;
-  const STAGES = { 1: ['arrive', 'review', 'evening', 'wroclaw'], 2: ['c2_call', 'c2_travel', 'c2_done'] };
+  const STAGES = { 1: ['arrive', 'review', 'evening', 'wroclaw'], 2: ['c2_call', 'c2_travel', 'c2_done'], 3: ['c3_brief', 'c3_consult', 'c3_done'], 4: ['c4_intake', 'c4_train', 'c4_court', 'c4_done'] };
+  F.chapterOS = F.chapterOS || {}; // per-chapter app overrides: { docs(main, api), vdr, cal, law }
+  const override = (app) => { const X = F.chapterOS[ch()]; return X && X[app]; };
   const ch = () => F.state.chapter || 1;
   const stageIdx = () => Math.max(0, STAGES[ch()].indexOf(F.state.stage || STAGES[ch()][0]));
   const inCh = (m) => (m.ch || 1) === ch() && m.stage <= stageIdx();
@@ -58,14 +60,14 @@
 
   F.unread = () => F.mail.filter((m) => inCh(m) && !F.state.readMail[m.id]).length;
 
-  F.openComputer = async (app) => {
-    const sc = F.scene;
+  F.openComputer = async (app, opt) => {
+    opt = opt || {};
     F.inputLocked = true;
     F.audio.tone(880, 0.12, 0.01);
-    await F.camTween({ x: 674, y: 591, z: 3.1 }, 0.85, F.U.easeInOut);
+    if (!opt.noCam) await F.camTween({ x: 674, y: 591, z: 3.1 }, 0.85, F.U.easeInOut);
     const p = F.ui.panel('os', `
       <div class="os-bg"></div>
-      <div class="os-top"><span class="os-brand">ADLER WENDT</span><span class="os-app">Workspace</span><span class="os-sp"></span><span class="os-user">Associate · M&amp;A · 9.14</span><span class="os-clock">${F.state.time || '08:07'}</span></div>
+      <div class="os-top"><span class="os-brand">ADLER WENDT</span><span class="os-app">Workspace</span><span class="os-sp"></span><span class="os-user">${ch() >= 3 ? 'Associate · Employment · PL–DE' : 'Associate · M&amp;A · 9.14'}</span><span class="os-clock">${F.state.time || '08:07'}</span></div>
       <div class="os-rail">
         <button data-app="mail" title="Mail">${ICONS.mail}<i class="badge"></i></button>
         <button data-app="docs" title="Documents">${ICONS.docs}</button>
@@ -93,7 +95,7 @@
           F.state.readMail[id] = true; F.save();
           main.querySelectorAll('.ml-item').forEach((b) => b.classList.toggle('sel', b.dataset.id === id));
           main.querySelector(`.ml-item[data-id="${id}"]`).classList.remove('unread');
-          read.innerHTML = `<div class="mr-subj">${m.subject}</div><div class="mr-from"><div class="mr-av">${m.from.split(' ').map((w) => w[0]).join('').slice(-2)}</div><div><b>${m.from}</b> &lt;${m.addr}&gt;<br><span>to me · ${m.time}</span></div></div>${m.attach ? `<div class="mr-att">${m.attach.map((a, i) => `<button data-i="${i}"><i>${a.name.split('.').pop().toUpperCase()}</i>${a.name}</button>`).join('')}</div>` : ''}<div class="mr-body">${m.dynamic === 'memo' ? memoReply() : m.dynamic ? wendtReply() : m.body}</div>`;
+          read.innerHTML = `<div class="mr-subj">${m.subject}</div><div class="mr-from"><div class="mr-av">${m.from.split(' ').map((w) => w[0]).join('').slice(-2)}</div><div><b>${m.from}</b> &lt;${m.addr}&gt;<br><span>to me · ${m.time}</span></div></div>${m.attach ? `<div class="mr-att">${m.attach.map((a, i) => `<button data-i="${i}"><i>${a.name.split('.').pop().toUpperCase()}</i>${a.name}</button>`).join('')}</div>` : ''}<div class="mr-body">${typeof m.dynamic === 'function' ? m.dynamic() : m.dynamic === 'memo' ? memoReply() : m.dynamic ? wendtReply() : m.body}</div>`;
           read.querySelectorAll('.mr-att button').forEach((b) => b.addEventListener('pointerdown', (e) => { e.stopPropagation(); m.attach[+b.dataset.i].open(); }));
           refreshBadge();
           F.audio.click();
@@ -103,6 +105,7 @@
         if (firstUnread) show(firstUnread.id);
       },
       docs() {
+        if (override('docs')) return override('docs')(main, { close: () => closeOS() });
         if (ch() === 2) {
           main.innerHTML = `<div class="docs"><div class="dh">Documents <span>Silform ./. Vogt &amp; Keller · AW-GLI-2027-004</span></div><div class="dgrid">${F.ch2Docs.map(([k, n, f, t]) => `<button class="dcard ${k === 'memo' ? 'memo-card' : ''} ${F.state.readDocs && F.state.readDocs[k] ? 'seen' : ''}" data-k="${k}"><i class="t-${t}">${t}</i><b>${n}</b><span>${f}</span></button>`).join('')}</div></div>`;
           main.querySelectorAll('.dcard').forEach((b) => b.addEventListener('pointerdown', (e) => {
@@ -122,6 +125,7 @@
         }));
       },
       vdr() {
+        if (override('vdr')) return override('vdr')(main, { close: () => closeOS() });
         if (ch() === 2) {
           const items = [['thread', 'Quality / RE ECN-0417 rib B.msg'], ['rtg', 'Laboratorium / QL-2027-006 RTG.pdf'], ['cfo2', 'Zarząd / CFO note.msg']];
           main.innerHTML = `<div class="docs vdr-app"><div class="dh">Silform shared drive <span>read-only · shared with Adler Wendt</span></div><div class="vlist">${items.map(([k, n]) => `<button class="vitem" data-k="${k}"><i>▸</i>${n}</button>`).join('')}</div></div>`;
@@ -133,6 +137,7 @@
         main.querySelectorAll('.vitem').forEach((b) => b.addEventListener('pointerdown', (e) => { e.stopPropagation(); F.openDoc(b.dataset.k); }));
       },
       cal() {
+        if (override('cal')) return override('cal')(main, { close: () => closeOS() });
         if (ch() === 2) {
           main.innerHTML = `<div class="cal"><div class="dh">Tuesday, 12 January 2027</div><div class="cal-day">${[['06:50', 'Call — A. Wróbel (Silform)', 'mobile'], ['12:00', 'Stellungnahme due → H. Wendt', ''], ['15:10', 'KTW → STR', 'Katowice Airport'], ['18:30', 'Meeting — Hartmann Schulte / Vogt &amp; Keller', 'Stuttgart-Feuerbach']].map(([t, n, r]) => `<div class="cal-e ${t === '18:30' ? 'hot' : ''}"><b>${t}</b><span>${n}</span><i>${r}</i></div>`).join('')}</div><div class="dh sm">Friday, 15 January</div><div class="cal-day"><div class="cal-e hot"><b>24:00</b><span>Hartmann deadline — €18.4m</span><i></i></div></div></div>`;
           return;
@@ -142,6 +147,7 @@
           <div class="dh sm">Wednesday, 14 October</div><div class="cal-day"><div class="cal-e hot"><b>10:00</b><span>SIGNING — Project Carbo</span><i>Wrocław</i></div></div></div>`;
       },
       law() {
+        if (override('law')) return override('law')(main, { close: () => closeOS() });
         if (ch() === 2) {
           main.innerHTML = `<div class="law"><div class="dh">Research <span>beck-online · Legalis · EUR-Lex</span></div>
             <div class="law-q">CISG · Rechtswahl deutsches Recht · Gerichtsstand · Rügeobliegenheit</div>
@@ -179,7 +185,7 @@
       p.close();
       F.audio.tone(440, 0.1, 0.01);
       await F.wait(250);
-      await F.camTween({ x: F.VW / 2, y: F.VH / 2, z: 1 }, 0.8, F.U.easeInOut);
+      if (!opt.noCam) await F.camTween({ x: F.VW / 2, y: F.VH / 2, z: 1 }, 0.8, F.U.easeInOut);
       F.inputLocked = false;
       F.state.unread = F.unread();
       F.emit('computer:closed');

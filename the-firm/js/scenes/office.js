@@ -562,7 +562,7 @@
     // label + stamp
     G.quad(g, [[1280, 872 + o], [1420, 872 + o], [1428, 900 + o], [1276, 900 + o]], '#efe8d8');
     g.fillStyle = '#2a2320'; g.font = '600 14px "Barlow Condensed", sans-serif'; g.textAlign = 'left';
-    g.fillText(S.chapter === 2 ? 'SILFORM ./. V&K' : 'PROJEKT  CARBO', 1290, 892 + o);
+    g.fillText(({ 2: 'SILFORM ./. V&K', 3: 'SILFORM · HALA 2' })[S.chapter] || 'PROJEKT  CARBO', 1290, 892 + o);
     g.save(); g.translate(1470, 930 + o); g.rotate(-0.12);
     g.strokeStyle = 'rgba(200,60,50,0.85)'; g.lineWidth = 2; g.strokeRect(-64, -16, 128, 30);
     g.fillStyle = 'rgba(200,60,50,0.85)'; g.font = '700 12px "Barlow Condensed", sans-serif'; g.textAlign = 'center';
@@ -590,7 +590,7 @@
     }
     // nameplate / business cards holder
     G.quad(g, [[40, 860 + o], [150, 858 + o], [156, 880 + o], [34, 882 + o]], '#b8955a');
-    g.fillStyle = 'rgba(0,0,0,0.6)'; g.font = '600 9px "Barlow Condensed", sans-serif'; g.textAlign = 'center'; g.fillText('M&A · 9.14', 95, 874 + o);
+    g.fillStyle = 'rgba(0,0,0,0.6)'; g.font = '600 9px "Barlow Condensed", sans-serif'; g.textAlign = 'center'; g.fillText(S.chapter >= 3 ? 'EMPL · 9.14' : 'M&A · 9.14', 95, 874 + o);
     // succulent
     g.fillStyle = '#1a1a1c'; g.fillRect(40, 800 + o, 60, 50);
     g.fillStyle = '#2d3b2c';
