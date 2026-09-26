@@ -502,7 +502,10 @@ input, textarea, select { font: inherit; color: inherit; user-select: text; }
   .map-side { display: none; }
   .phone { right: 50%; transform: translateX(50%); width: min(390px, 94vw); }
   .hud-loc .name { font-size: 30px; }
-  .hud-obj { max-width: 55vw; }
+  .hud-obj { top: 118px; left: 28px; right: auto; max-width: 80vw; text-align: left; }
+  .hud-xp .bar, .hud-xp .meta { display: none; }
+  .hud-dock { right: 12px; gap: 6px; }
+  .dock-btn { width: 50px; height: 50px; }
   .passport { grid-template-columns: 1fr; }
   .passport .cover { display: none; }
 }
