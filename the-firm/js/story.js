@@ -140,10 +140,10 @@
     if (S.chapter !== 1) return;
     const sc = scene();
     if (S.stage === 'arrive') {
-      await ui.phone.open('Albrecht', 'Office of Dr. Helena Wendt', [{ text: 'Guten Morgen, and welcome to Adler Wendt.', time: '07:18' }, { text: 'Partner wants you upstairs.', time: '07:19' }, { text: '23rd floor. The stairs by the window.', time: '07:19' }], '07:20');
+      await ui.phone.open('Albrecht', 'Office of Dr. Helena Wendt', [{ text: 'Guten Morgen, and welcome to Adler Wendt.', time: '07:18' }, { text: 'Partner wants you upstairs.', time: '07:19' }, { text: '10th floor. Take the stairs on the right, by the window.', time: '07:19' }], '07:20');
       sc.phoneText = null;
       F.flag('readMsg', true);
-      ui.objective('Take the stairs to the 23rd floor.');
+      ui.objective('Take the stairs on the right up to the 10th floor.');
     } else if (S.stage === 'review') {
       await ui.phone.open('Jonas Brenner', 'Associate', [{ text: 'VDR link is in your inbox.', time: '08:06' }, { text: 'Board minutes are in Polish. There’s a translate button. Use it.', time: '08:07' }, { text: 'Wendt wants the redline by 17:00 👀', time: '08:07' }], S.time);
     } else if (S.stage === 'evening') {

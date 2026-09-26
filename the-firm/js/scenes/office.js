@@ -196,6 +196,15 @@
       g.drawImage(this.desk, -300, 560, this.desk.vw, this.desk.vh);
       this.drawDeskLive(g, t, L, eve);
       g.restore();
+      F.layer(D_ROOM);
+      // first-day hint: once the message has been read, the stairs breathe until you take them
+      if (F.state.chapter === 1 && F.state.stage === 'arrive' && F.flag('readMsg')) {
+        const pu = 0.5 + 0.5 * Math.sin(t * 2.4);
+        G.glow(g, 1720, 330, 360, [255, 205, 140], 0.7 + 0.5 * pu); G.glow(g, 1755, 250, 120, [255, 230, 190], 0.8 + 0.4 * pu);
+        g.save(); g.globalAlpha = 0.75 + 0.25 * pu; g.strokeStyle = '#fff4dc'; g.lineWidth = 7; g.shadowColor = 'rgba(255,200,120,0.9)'; g.shadowBlur = 16; g.lineCap = 'round';
+        const y0 = 250 - pu * 10; g.beginPath(); g.moveTo(1730, y0 + 20); g.lineTo(1755, y0); g.lineTo(1780, y0 + 20); g.stroke();
+        g.fillStyle = '#fff4dc'; g.font = '600 30px "Barlow Condensed", sans-serif'; g.textAlign = 'center'; g.fillText('10', 1755, y0 + 50); g.restore();
+      }
     },
     drawDeskLive(g, t, L, eve) {
       const h = this.hoverA;
