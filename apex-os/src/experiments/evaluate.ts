@@ -139,5 +139,5 @@ export function verifyRecommendations(ds: Dataset): { outcomes: RecommendationOu
 }
 
 export function activeExperiments(ds: Dataset): Experiment[] {
-  return ds.experiments.filter((e) => e.status === "active" && addDays(e.startDate, e.durationDays - 1) >= addDays(ds.asOf, -0) && e.startDate <= addDays(ds.asOf, 365));
+  return ds.experiments.filter((e) => e.status === "active" && addDays(e.startDate, e.durationDays - 1) >= ds.asOf);
 }

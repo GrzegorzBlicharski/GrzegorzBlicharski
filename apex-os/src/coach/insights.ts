@@ -68,7 +68,7 @@ export function goalAlignment(ds: Dataset, domain: string, metricKey?: string): 
 }
 
 const f0 = (x: number | null | undefined) => (x == null ? "—" : x.toFixed(0));
-const f1 = (x: number | null | undefined) => (x == null ? "—" : x.toFixed(1));
+const f1 = (x: number | null | undefined) => (x == null ? "—" : Math.abs(x) >= 100 ? Math.round(x).toLocaleString("en-US") : x.toFixed(1));
 
 type Draft = Omit<Insight, "priority" | "goalRelevance" | "id"> & { goalRelevance?: number };
 

@@ -27,3 +27,17 @@ sustainability dip, tests and milestones. `npm run seed` (1 year) / `npm run see
 ## Manual verification checklist
 empty state · seeded state · long history (3y) · mobile (390 px) · desktop (1440 px) · corrupted backup ·
 timer persistence across navigation · settings change keeps history · dark/light.
+
+## Verification log (implementation run, 2026-10-02)
+| Check | Result |
+|---|---|
+| `npm test` | 12 files, 71 tests passing |
+| `npm run typecheck`, `npm run lint` | clean |
+| `npm run build` | all 24 routes compile |
+| Seed 2 fictional years | 20k events in 1.5 s; every route renders 200 in < 0.4 s |
+| Large profile (3 y, 100 740 sessions, 985 093 answers, 203k events) | seed 16 s; full dataset rebuild 2.3 s (cached until the next write); insights 0.13 s |
+| Browser workflow on an empty DB (Playwright) | empty state on all pages → goal → timer start → navigation + reload keep timer → pause/resume → finish with questions → phone grid → evening review → versioned settings change → corrupted backup rejected with data intact → export/restore round trip → Cmd+K search; no page errors |
+| Layout | desktop 1440 px & mobile 390 px without horizontal page scroll; dark & light themes |
+
+Known limitation: at stress volume the session projection load dominates (~1 s per 100k sessions). Realistic use
+(≈5 sessions/day) stays far below that; incremental fact caching is the next optimisation if needed.
