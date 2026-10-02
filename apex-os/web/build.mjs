@@ -73,8 +73,10 @@ const html = `<title>APEX OS</title>
 <p class="muted" style="margin-top:14px;font-size:11px">Your data is private: it lives in your own artifact storage and this browser. Nothing is shared.</p>
 </div></div>
 <div id="root"></div>
-<script src="app.js"></script>
+__APP_JS__
 `;
-writeFileSync(path.join(out, "index.html"), html);
-const js = readFileSync(path.join(out, "app.js"));
-console.log(`dist: index.html ${(html.length / 1024).toFixed(0)} KB, app.js ${(js.length / 1024).toFixed(0)} KB`);
+const js = readFileSync(path.join(out, "app.js"), "utf8");
+// Inline the bundle (single self-contained page); neutralise sequences that would end the script element early.
+const safeJs = js.replace(/<\/(script)/gi, "<\\/$1").replace(/<!--/g, "<\\!--");
+writeFileSync(path.join(out, "index.html"), html.replace("__APP_JS__", () => `<script>${safeJs}</script>`));
+console.log(`dist: index.html ${(readFileSync(path.join(out, "index.html")).length / 1024).toFixed(0)} KB (bundle inlined)`);
