@@ -101,7 +101,7 @@ export default async function DigitalPage({ searchParams }: { searchParams: Prom
               ))}
             </tbody>
           </table>
-          <Link href="/log#phone" className="btn mt-2">
+          <Link href="/log?tab=phone" className="btn mt-2">
             Add phone data
           </Link>
         </Panel>

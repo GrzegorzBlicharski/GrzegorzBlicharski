@@ -26,7 +26,7 @@ export default function RecoveryPage() {
   const anomalies = [...detectAnomalies(ds, "total.min"), ...detectAnomalies(ds, "phone.total"), ...detectAnomalies(ds, "focus.avg")].filter((a) => a.day >= addDays(ds.asOf, -60)).sort((a, b) => (a.day < b.day ? 1 : -1));
   return (
     <div className="space-y-3">
-      <PageHeader title="Sustainability" subtitle="Productivity analysis without health diagnosis. The system never recommends chronic sleep restriction or skipping recovery." />
+      <PageHeader title="Sustainability" subtitle="Whether your workload is sustainable. Behavioural signals only — never health advice, never less sleep." />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
         <Kpi label="Status" value={<Badge tone={sc.warning ? "risk" : "good"}>{sc.warning ? "Sustainability warning" : "Within capacity"}</Badge>} sub={sc.warning ? sc.signals.join(", ") : `work ${sc.hoursChangePct != null ? `${sc.hoursChangePct > 0 ? "+" : ""}${sc.hoursChangePct.toFixed(0)}%` : "—"} vs prev 14D`} />
         <Kpi label="Sustained 7D max" value={fmtMin(cap.w7?.value)} sub={cap.w7 ? `ending ${cap.w7.end}` : ""} />

@@ -17,7 +17,7 @@ export function TimerBadge({ start, pausedMinutes, pausedAt, label }: { start: s
   const mm = Math.floor((sec % 3600) / 60);
   const ss = sec % 60;
   return (
-    <Link href="/log" className="btn btn-sm" style={{ borderColor: "var(--accent)" }} title="Running session">
+    <Link href="/log" className="btn btn-sm" style={{ borderColor: "transparent", background: pausedAt ? "var(--warn-soft)" : "var(--good-soft)" }} title="Running session">
       <span aria-hidden className="h-2 w-2 rounded-full" style={{ background: pausedAt ? "var(--warn)" : "var(--good)" }} />
       <span className="num">
         {hh}:{String(mm).padStart(2, "0")}:{String(ss).padStart(2, "0")}
@@ -38,7 +38,7 @@ export function LiveClock({ start, pausedMinutes, pausedAt }: { start: string; p
   const end = pausedAt ? toMs(pausedAt) : now ?? toMs(start);
   const sec = Math.max(0, Math.floor((end - toMs(start)) / 1000 - pausedMinutes * 60));
   return (
-    <span className="num text-4xl font-semibold">
+    <span className="num text-[52px] font-semibold leading-none">
       {Math.floor(sec / 3600)}:{String(Math.floor((sec % 3600) / 60)).padStart(2, "0")}:{String(sec % 60).padStart(2, "0")}
     </span>
   );

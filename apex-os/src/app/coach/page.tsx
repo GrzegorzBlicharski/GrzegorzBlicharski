@@ -23,7 +23,7 @@ export default function CoachPage() {
   const goals = ds.goals.filter((g) => g.status === "active");
   return (
     <div className="space-y-3">
-      <PageHeader title="Coach engine" subtitle="Rule-based, evidence-first. FACT → INTERPRETATION → ACTION. No grading of the person." />
+      <PageHeader title="Coach engine" subtitle="What the data says, what it likely means, and the one change worth making next." />
       <Panel title="Priority formula (visible)">
         <code className="text-2 block text-xs leading-relaxed">{PRIORITY_FORMULA}</code>
         <p className="muted mt-1 text-xs">

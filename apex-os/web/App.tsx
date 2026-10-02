@@ -5,7 +5,6 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { TimerBadge } from "@/components/TimerBadge";
 import { activeTimer } from "@/server/active";
-import { currentDay } from "@/server/context";
 import { getDb } from "./shims/db";
 import { getRoute, snapshotKey, subscribe } from "./router";
 import { getStatus, subscribeStatus } from "./persistence";
@@ -60,7 +59,7 @@ function StorageBadge() {
   const label = s.mode === "account" ? (s.saving ? "Saving…" : "Saved to your account") : s.mode === "browser" ? "Saved in this browser only" : "Not saved";
   const tone = s.error ? "var(--risk)" : s.mode === "account" ? "var(--good)" : "var(--warn)";
   return (
-    <span className="muted hidden items-center gap-1 text-[11px] md:inline-flex" title={s.error ?? (s.lastSaved ? `Last saved ${s.lastSaved}` : "")}>
+    <span className="muted hidden items-center gap-1.5 text-[12px] md:inline-flex" title={s.error ?? (s.lastSaved ? `Last saved ${s.lastSaved}` : "")}>
       <span aria-hidden className="h-2 w-2 rounded-full" style={{ background: tone }} />
       {s.error ? "Save problem — see Data" : label}
     </span>
@@ -100,12 +99,11 @@ export function App() {
     <div className="flex min-h-screen">
       <Nav />
       <div className="min-w-0 flex-1">
-        <header className="sticky z-30 flex items-center gap-2 border-b px-4 py-2 backdrop-blur" style={{ top: "env(safe-area-inset-top, 0px)", borderColor: "var(--border)", background: "color-mix(in srgb, var(--bg) 85%, transparent)" }}>
-          <span className="pl-10 text-sm font-bold tracking-[0.2em] lg:hidden">APEX</span>
-          <span className="muted num hidden text-xs sm:inline">{currentDay()}</span>
+        <header className="sticky z-30 flex items-center gap-3 px-4 py-3 backdrop-blur-md lg:px-8" style={{ top: "env(safe-area-inset-top, 0px)", background: "color-mix(in srgb, var(--bg) 80%, transparent)" }}>
+          <span className="pl-10 text-[13px] font-bold tracking-[0.14em] lg:hidden">APEX</span>
           {demo && (
-            <a href="/data#demo" className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase" style={{ border: "1px solid var(--warn)", color: "var(--warn-ink)" }}>
-              Fictional demo data
+            <a href="/data#demo" className="rounded-full px-2.5 py-0.5 text-[11.5px] font-semibold" style={{ background: "var(--warn-soft)", color: "var(--warn-ink)" }}>
+              Demo data
             </a>
           )}
           <StorageBadge />
@@ -115,7 +113,7 @@ export function App() {
             <ThemeToggle />
           </div>
         </header>
-        <main className="mx-auto max-w-[1500px] px-4 pb-24 pt-4 lg:pb-10">
+        <main className="mx-auto max-w-[1440px] px-4 pb-28 pt-2 lg:px-8 lg:pb-12">
           {error ? (
             <div className="panel p-4 text-sm">
               <div className="font-semibold" style={{ color: "var(--risk-ink)" }}>

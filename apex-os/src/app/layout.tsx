@@ -5,7 +5,6 @@ import { CommandPalette } from "@/components/CommandPalette";
 import { ThemeToggle, THEME_SCRIPT } from "@/components/ThemeToggle";
 import { TimerBadge } from "@/components/TimerBadge";
 import { activeTimer } from "@/server/active";
-import { currentDay } from "@/server/context";
 import { getDb } from "@/data/db";
 
 export const metadata: Metadata = {
@@ -22,17 +21,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+        <link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" /><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" />
       </head>
       <body>
         <div className="flex min-h-screen">
           <Nav />
           <div className="min-w-0 flex-1">
-            <header className="sticky top-0 z-30 flex items-center gap-2 border-b px-4 py-2 backdrop-blur" style={{ borderColor: "var(--border)", background: "color-mix(in srgb, var(--bg) 85%, transparent)" }}>
-              <span className="pl-10 text-sm font-bold tracking-[0.2em] lg:hidden">APEX</span>
-              <span className="muted num hidden text-xs sm:inline">{currentDay()}</span>
+            <header className="sticky top-0 z-30 flex items-center gap-3 px-4 py-3 backdrop-blur-md lg:px-8" style={{ background: "color-mix(in srgb, var(--bg) 80%, transparent)" }}>
+              <span className="pl-10 text-[13px] font-bold tracking-[0.14em] lg:hidden">APEX</span>
               {demo && (
-                <a href="/data" className="rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase" style={{ border: "1px solid var(--warn)", color: "var(--warn-ink)" }}>
-                  Fictional demo data
+                <a href="/data#demo" className="rounded-full px-2.5 py-0.5 text-[11.5px] font-semibold" style={{ background: "var(--warn-soft)", color: "var(--warn-ink)" }}>
+                  Demo data
                 </a>
               )}
               <div className="ml-auto flex items-center gap-2">
@@ -41,7 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <ThemeToggle />
               </div>
             </header>
-            <main className="mx-auto max-w-[1500px] px-4 pb-24 pt-4 lg:pb-10">{children}</main>
+            <main className="mx-auto max-w-[1440px] px-4 pb-28 pt-2 lg:px-8 lg:pb-12">{children}</main>
           </div>
         </div>
         <MobileTabs />

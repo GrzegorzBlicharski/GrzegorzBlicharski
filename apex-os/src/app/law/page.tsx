@@ -30,7 +30,7 @@ export default function LawPage() {
   const tests = ds.tests.filter((t) => t.domain === "LAW").slice(-15).reverse();
   return (
     <div className="space-y-3">
-      <PageHeader title="Law" subtitle="Knowledge map, retention and practical skill. Readiness is built from evidence — never from hours." />
+      <PageHeader title="Law" subtitle="What you know, what you are forgetting, and how ready you are — measured from answers and tests, not hours." />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         <Kpi label="Questions 30D" value={fmtNum(q30.total)} sub={`${fmtNum(q30.value, 0)}/day`} metricKey="law.questions" />
         <Kpi label="Accuracy 30D" value={fmtPct(acc30.value, 1)} metricKey="law.accuracy" />

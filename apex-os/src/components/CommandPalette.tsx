@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { NAV } from "./Nav";
+import { Search } from "lucide-react";
 
 interface Hit {
   kind: string;
@@ -64,17 +65,20 @@ export function CommandPalette() {
 
   return (
     <>
-      <button className="btn btn-sm" onClick={() => setOpen(true)} aria-label="Search">
-        <span className="muted">Search</span>
-        <kbd className="muted hidden text-[10px] sm:inline">⌘K</kbd>
+      <button className="btn btn-sm" onClick={() => setOpen(true)} aria-label="Search" style={{ background: "var(--panel-2)", borderColor: "transparent" }}>
+        <Search size={15} className="muted" />
+        <span className="muted hidden sm:inline">Search</span>
+        <kbd className="muted hidden rounded border px-1 text-[10px] md:inline" style={{ borderColor: "var(--border-strong)" }}>
+          Ctrl K
+        </kbd>
       </button>
       {open && (
         <div className="fixed inset-0 z-[60] flex items-start justify-center p-4 pt-[12vh]" role="dialog" aria-modal>
-          <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
-          <div className="panel relative w-full max-w-xl overflow-hidden shadow-2xl">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOpen(false)} />
+          <div className="panel relative w-full max-w-xl overflow-hidden" style={{ boxShadow: "0 24px 64px rgba(0,0,0,.35)" }}>
             <input
               ref={inputRef}
-              className="w-full border-b bg-transparent px-4 py-3 text-base outline-none"
+              className="w-full border-b bg-transparent px-5 py-4 text-[16px] outline-none"
               style={{ borderColor: "var(--border)" }}
               placeholder="Search sessions, tests, notes, goals, milestones, pages…"
               value={q}
@@ -92,8 +96,8 @@ export function CommandPalette() {
             <ul className="max-h-[50vh] overflow-y-auto py-1">
               {hits.map((h, i) => (
                 <li key={`${h.href}-${i}`}>
-                  <button className="flex w-full items-center gap-3 px-4 py-2 text-left text-sm" style={i === sel ? { background: "var(--panel-2)" } : undefined} onMouseEnter={() => setSel(i)} onClick={() => go(h)}>
-                    <span className="label w-20 shrink-0">{h.kind}</span>
+                  <button className="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left text-[14px]" style={i === sel ? { background: "var(--panel-2)" } : undefined} onMouseEnter={() => setSel(i)} onClick={() => go(h)}>
+                    <span className="muted w-20 shrink-0 text-[12px] font-semibold">{h.kind}</span>
                     <span className="truncate">{h.title}</span>
                     {h.sub && <span className="muted ml-auto truncate text-xs">{h.sub}</span>}
                   </button>

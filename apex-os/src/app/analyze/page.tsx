@@ -79,7 +79,7 @@ export default async function AnalyzePage({ searchParams }: { searchParams: Prom
   const tab = sp.tab ?? "explore";
   return (
     <div className="space-y-3">
-      <PageHeader title="Analyze & compare" subtitle="Metric · dimension · aggregation · period · comparison. Correlation ≠ causation — relationships worth acting on become experiments." />
+      <PageHeader title="Analyze & compare" subtitle="Compare any two metrics, any two dates, or now versus before. A link is not a cause — test the interesting ones." />
       <div className="flex flex-wrap gap-1">
         {TABS.map(([k, l]) => (
           <Link key={k} href={`/analyze?tab=${k}`} className={`btn btn-sm ${tab === k ? "btn-primary" : ""}`}>

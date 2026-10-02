@@ -6,7 +6,7 @@ export default function MetricsPage() {
   const domains = [...new Set(rows.map((r) => r.domain))];
   return (
     <div className="space-y-3">
-      <PageHeader title="Metrics registry" subtitle="How every number is calculated. Same events + same version ⇒ same number. Also exported as docs/METRICS.md." />
+      <PageHeader title="Metrics registry" subtitle="The formula, source and limits behind every number in the app." />
       {domains.map((d) => (
         <Panel key={d} title={d}>
           <div className="overflow-x-auto">

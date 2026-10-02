@@ -459,7 +459,12 @@ export function generateInsights(ds: Dataset): Insight[] {
         ...(st.requiredRate != null ? [`Required ${f1(st.requiredRate)} ${g.unit}/day vs current ${f1(st.rate30)} ${g.unit}/day (30D).`] : []),
       ],
       interpretation: "At the current rate the deadline will be missed unless the rate or the target changes.",
-      action: st.requiredRate != null && st.rate30 != null && st.requiredRate > st.rate30 * 1.5 ? "Required rate is far above current: re-scope the target or deadline, or protect a daily block." : `Raise daily ${g.unit} toward ${f1(st.requiredRate)} for the next 14 days.`,
+      action:
+        st.requiredRate == null
+          ? "Book the next mock test and put this week's practice into the weakest component it measures."
+          : st.rate30 != null && st.requiredRate > st.rate30 * 1.5
+            ? "Required rate is far above current: re-scope the target or deadline, or protect a daily block."
+            : `Raise daily ${g.unit} toward ${f1(st.requiredRate)} for the next 14 days.`,
       evidence: { n: 30, window: "30D" },
       severity: (st.pace ?? 1) < 0.7 ? 5 : 4,
       confidence: "HIGH",

@@ -17,7 +17,7 @@ export default function CareerPage() {
   const spec = specialization(ds).slice(0, 5);
   return (
     <div className="space-y-3">
-      <PageHeader title="Career development" subtitle="Competencies backed by evidence: tests, projects, exercises, documents, assessments." />
+      <PageHeader title="Career development" subtitle="Professional skills, each backed by evidence you can point to." />
       <Grid cols="md:grid-cols-3">
         <Panel title="Goal-aligned time (30D)">
           <div className="text-2xl font-semibold">{ga.share != null ? `${ga.share.toFixed(0)}%` : "—"}</div>

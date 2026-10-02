@@ -5,7 +5,6 @@
  */
 import {
   ResponsiveContainer,
-  LineChart,
   Line,
   XAxis,
   YAxis,
@@ -19,13 +18,16 @@ import {
   ZAxis,
   Legend,
   Cell,
+  ComposedChart,
+  Area,
 } from "recharts";
+import { useId } from "react";
 import { fmtUnit } from "./format";
 
 const legendText = (v: string) => <span style={{ color: "var(--text-2)" }}>{v}</span>;
-const axisProps = { stroke: "var(--axis)", tick: { fill: "var(--muted)", fontSize: 11 }, tickLine: false } as const;
+const axisProps = { stroke: "var(--axis)", tick: { fill: "var(--muted)", fontSize: 11.5, fontFamily: "var(--font-num)" }, tickLine: false } as const;
 const tooltipStyle = {
-  contentStyle: { background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12, color: "var(--text)" },
+  contentStyle: { background: "var(--panel)", border: "1px solid var(--border-strong)", borderRadius: 10, fontSize: 12.5, color: "var(--text)", boxShadow: "0 8px 24px rgba(0,0,0,.18)", padding: "8px 12px" },
   labelStyle: { color: "var(--text-2)" },
   itemStyle: { color: "var(--text)" },
 };
@@ -36,22 +38,34 @@ export interface TrendPoint {
   avg?: number | null;
 }
 
-export function TrendChart({ data, unit, target, height = 200, label = "Daily", avgLabel = "7-day average", showDaily = true }: { data: TrendPoint[]; unit: string; target?: number | null; height?: number; label?: string; avgLabel?: string; showDaily?: boolean }) {
-  if (!data.some((d) => d.value != null)) return <div className="muted py-8 text-center text-sm">No data in this period</div>;
+export function TrendChart({ data, unit, target, height = 220, label = "Daily", avgLabel = "7-day average", showDaily = true }: { data: TrendPoint[]; unit: string; target?: number | null; height?: number; label?: string; avgLabel?: string; showDaily?: boolean }) {
+  const rawId = useId();
+  if (!data.some((d) => d.value != null)) return <div className="muted py-10 text-center text-sm">No data in this period yet</div>;
   const hasAvg = data.some((d) => d.avg != null);
+  const lastIdx = (() => {
+    for (let i = data.length - 1; i >= 0; i--) if ((hasAvg ? data[i].avg : data[i].value) != null) return i;
+    return -1;
+  })();
+  const gid = `g${rawId.replace(/[^a-zA-Z0-9]/g, "")}`;
   return (
     <div style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 6, right: 8, bottom: 0, left: 0 }}>
-          <CartesianGrid stroke="var(--grid)" vertical={false} />
-          <XAxis dataKey="day" {...axisProps} minTickGap={40} tickFormatter={(d: string) => d.slice(5)} />
-          <YAxis {...axisProps} width={44} tickFormatter={(v: number) => fmtUnit(v, unit)} />
-          <Tooltip {...tooltipStyle} formatter={(v: number) => fmtUnit(v, unit)} />
-          {target != null && <ReferenceLine y={target} stroke="var(--text-2)" strokeDasharray="4 4" label={{ value: "target", fill: "var(--muted)", fontSize: 10, position: "insideTopRight" }} />}
-          {showDaily && <Line type="linear" dataKey="value" name={label} stroke="var(--s1)" strokeOpacity={hasAvg ? 0.35 : 1} strokeWidth={hasAvg ? 1.5 : 2} dot={false} connectNulls={false} isAnimationActive={false} />}
-          {hasAvg && <Line type="monotone" dataKey="avg" name={avgLabel} stroke="var(--s1)" strokeWidth={2} dot={false} connectNulls isAnimationActive={false} />}
-          {showDaily && hasAvg && <Legend wrapperStyle={{ fontSize: 11 }} iconType="plainline" formatter={legendText} />}
-        </LineChart>
+        <ComposedChart data={data} margin={{ top: 8, right: 10, bottom: 0, left: 0 }}>
+          <defs>
+            <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="var(--s1)" stopOpacity={0.28} />
+              <stop offset="100%" stopColor="var(--s1)" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid stroke="var(--grid)" strokeDasharray="3 4" vertical={false} />
+          <XAxis dataKey="day" {...axisProps} axisLine={false} minTickGap={48} tickFormatter={(d: string) => d.slice(5)} />
+          <YAxis {...axisProps} axisLine={false} width={48} tickFormatter={(v: number) => fmtUnit(v, unit)} />
+          <Tooltip {...tooltipStyle} formatter={(v: number) => fmtUnit(v, unit)} cursor={{ stroke: "var(--axis)" }} />
+          {target != null && <ReferenceLine y={target} stroke="var(--text-2)" strokeOpacity={0.6} strokeDasharray="5 5" label={{ value: "target", fill: "var(--muted)", fontSize: 11, position: "insideTopRight" }} />}
+          {hasAvg && <Area type="monotone" dataKey="avg" name={avgLabel} stroke="var(--s1)" strokeWidth={2.25} fill={`url(#${gid})`} connectNulls isAnimationActive={false} dot={(p: { index?: number; cx?: number; cy?: number }) => (p.index === lastIdx && p.cx != null && p.cy != null ? <circle key="end" cx={p.cx} cy={p.cy} r={4.5} fill="var(--s1)" stroke="var(--panel)" strokeWidth={2} /> : <g key={p.index} />)} />}
+          {showDaily && <Line type="linear" dataKey="value" name={label} stroke="var(--s1)" strokeOpacity={hasAvg ? 0.3 : 1} strokeWidth={hasAvg ? 1.25 : 2} dot={false} connectNulls={false} isAnimationActive={false} />}
+          {showDaily && hasAvg && <Legend wrapperStyle={{ fontSize: 12 }} iconType="plainline" formatter={legendText} />}
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );
@@ -63,12 +77,12 @@ export function Bars({ data, unit, height = 200, target, colorBy }: { data: { la
     <div style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 6, right: 8, bottom: 0, left: 0 }} barCategoryGap={2}>
-          <CartesianGrid stroke="var(--grid)" vertical={false} />
-          <XAxis dataKey="label" {...axisProps} interval="preserveStartEnd" minTickGap={16} />
-          <YAxis {...axisProps} width={44} tickFormatter={(v: number) => fmtUnit(v, unit)} />
+          <CartesianGrid stroke="var(--grid)" strokeDasharray="3 4" vertical={false} />
+          <XAxis dataKey="label" {...axisProps} axisLine={false} interval="preserveStartEnd" minTickGap={16} />
+          <YAxis {...axisProps} axisLine={false} width={48} tickFormatter={(v: number) => fmtUnit(v, unit)} />
           <Tooltip {...tooltipStyle} cursor={{ fill: "var(--panel-2)" }} formatter={(v: number) => fmtUnit(v, unit)} />
           {target != null && <ReferenceLine y={target} stroke="var(--text-2)" strokeDasharray="4 4" />}
-          <Bar dataKey="value" name="Value" fill="var(--s1)" radius={[4, 4, 0, 0]} isAnimationActive={false}>
+          <Bar dataKey="value" name="Value" fill="var(--s1)" radius={[5, 5, 0, 0]} maxBarSize={36} isAnimationActive={false}>
             {colorBy === "tone" && data.map((d, i) => <Cell key={i} fill={d.tone ? `var(--${d.tone === "good" ? "good" : d.tone === "warn" ? "warn" : "risk"})` : "var(--s1)"} />)}
           </Bar>
         </BarChart>
@@ -83,9 +97,9 @@ export function StackedBars({ data, keys, unit, height = 220 }: { data: Record<s
     <div style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ top: 6, right: 8, bottom: 0, left: 0 }} barCategoryGap={2}>
-          <CartesianGrid stroke="var(--grid)" vertical={false} />
-          <XAxis dataKey="label" {...axisProps} minTickGap={16} />
-          <YAxis {...axisProps} width={44} tickFormatter={(v: number) => fmtUnit(v, unit)} />
+          <CartesianGrid stroke="var(--grid)" strokeDasharray="3 4" vertical={false} />
+          <XAxis dataKey="label" {...axisProps} axisLine={false} minTickGap={16} />
+          <YAxis {...axisProps} axisLine={false} width={48} tickFormatter={(v: number) => fmtUnit(v, unit)} />
           <Tooltip {...tooltipStyle} cursor={{ fill: "var(--panel-2)" }} formatter={(v: number) => fmtUnit(v, unit)} />
           <Legend wrapperStyle={{ fontSize: 11 }} iconType="square" formatter={legendText} />
           {keys.slice(0, 8).map((k, i) => (

@@ -22,7 +22,7 @@ export default function SettingsPage() {
   const mixTotal = Object.values(st.germanTargetMix).reduce((a, b) => a + b, 0) || 1;
   return (
     <div className="space-y-3">
-      <PageHeader title="Settings" subtitle="Every change creates a new version with an effective date. History is never silently overwritten; past days keep the targets that applied then." />
+      <PageHeader title="Settings" subtitle="Changes apply from the date you choose. Past days keep the targets that were in force then." />
       <ActionForm action={saveSettingsForm} submitLabel="Save as new settings version" resetOnSuccess={false}>
         <div className="space-y-3">
           <Panel title="Version">

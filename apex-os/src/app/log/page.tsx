@@ -1,7 +1,9 @@
 import { ActionForm } from "@/components/ActionForm";
 import { LiveClock } from "@/components/TimerBadge";
-import { PageHeader, Panel, Field, Grid } from "@/components/ui";
-import { DomainSelect, ActivitySelect, AreaInput, FocusRadio, OutputFields, PhoneGrid, LawAreaSelect } from "@/components/forms";
+import { Tabs } from "@/components/Tabs";
+import { SessionPicker } from "@/components/SessionPicker";
+import { PageHeader, Field, ChipGroup } from "@/components/ui";
+import { OutputFields, LawAreaSelect, DomainSelect, ActivitySelect, AreaInput } from "@/components/forms";
 import { activeTimer } from "@/server/active";
 import { currentDay } from "@/server/context";
 import {
@@ -23,101 +25,131 @@ import { GERMAN_ERROR_CATEGORIES, PHONE_CATEGORIES } from "@/domains/catalog";
 
 export const dynamic = "force-dynamic";
 
-export default function LogPage() {
+const FOCUS = [
+  { value: "1", label: "1 · scattered" },
+  { value: "2", label: "2" },
+  { value: "3", label: "3 · ok" },
+  { value: "4", label: "4" },
+  { value: "5", label: "5 · locked in" },
+];
+const SCALE = ["1", "2", "3", "4", "5"].map((v) => ({ value: v, label: v }));
+
+function Card({ title, sub, children }: { title: string; sub?: string; children: React.ReactNode }) {
+  return (
+    <section className="panel max-w-3xl p-5 sm:p-6">
+      <h2 className="text-[18px] font-semibold">{title}</h2>
+      {sub && <p className="muted mt-1 text-[13px]">{sub}</p>}
+      <div className="mt-5">{children}</div>
+    </section>
+  );
+}
+
+const num = (name: string, placeholder?: string) => <input name={name} type="number" min={0} inputMode="numeric" placeholder={placeholder} className="input num" />;
+
+export default async function LogPage({ searchParams }: { searchParams?: Promise<Record<string, string | undefined>> }) {
+  const sp = (await searchParams) ?? {};
   const t = activeTimer();
   const today = currentDay();
+  const tabs = [
+    { id: "session", label: t ? "● Session running" : "Session" },
+    { id: "phone", label: "Phone" },
+    { id: "questions", label: "Law questions" },
+    { id: "review", label: "Evening review" },
+    { id: "german", label: "German output" },
+    { id: "energy", label: "Energy & sleep" },
+    { id: "past", label: "Past session" },
+    { id: "note", label: "Note" },
+  ];
   return (
-    <div className="space-y-3">
-      <PageHeader title="Quick log" subtitle="Designed for < 2 minutes of manual input per day. Everything else is derived." />
-      <Grid cols="lg:grid-cols-2">
-        <Panel title={t ? "Running session" : "Start session"} id="timer">
-          {t ? (
-            <div className="space-y-3">
-              <div className="flex flex-wrap items-center gap-3">
+    <div>
+      <PageHeader title="Quick log" subtitle="A minute or two a day. Totals, averages, streaks and forecasts are calculated for you." />
+      <Tabs tabs={tabs} initial={sp.tab ?? (sp.domain ? "session" : undefined)}>
+        {/* Session */}
+        {t ? (
+          <Card title={`${t.domain === "LAW" ? "Law" : t.domain === "GERMAN" ? "German" : t.domain} · ${t.activity.replace("_", " ")}${t.area ? ` · ${t.area}` : ""}`} sub={`Started ${t.start.slice(11, 16)}${t.plannedStart ? ` · planned ${t.plannedStart.slice(11, 16)}` : ""}`}>
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl p-5" style={{ background: "var(--panel-2)" }}>
+              <div>
+                <div className="muted text-[12px] font-semibold">{t.pausedAt ? "Paused" : "Elapsed"}</div>
                 <LiveClock start={t.start} pausedMinutes={t.pausedMinutes} pausedAt={t.pausedAt} />
-                <div className="text-2 text-sm">
-                  {t.domain} · {t.activity}
-                  {t.area ? ` · ${t.area}` : ""}
-                  <div className="muted text-xs">started {t.start.slice(11, 16)}{t.plannedStart ? ` (planned ${t.plannedStart.slice(11, 16)})` : ""}</div>
-                </div>
-                <form action={t.pausedAt ? resumeSession : pauseSession} className="ml-auto">
-                  <input type="hidden" name="sessionId" value={t.id} />
-                  <button className="btn">{t.pausedAt ? "Resume" : "Pause"}</button>
-                </form>
               </div>
-              <ActionForm action={completeSession} submitLabel="Finish session">
+              <form action={t.pausedAt ? resumeSession : pauseSession}>
                 <input type="hidden" name="sessionId" value={t.id} />
-                <div className="grid gap-3">
-                  <Field label="Focus (1–5)">
-                    <FocusRadio />
-                  </Field>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Field label="Interruptions">
-                      <input name="interruptions" type="number" min={0} className="input" inputMode="numeric" />
-                    </Field>
-                    <Field label="Context switches">
-                      <input name="contextSwitches" type="number" min={0} className="input" inputMode="numeric" />
-                    </Field>
-                  </div>
-                  {t.domain === "LAW" && (
-                    <div className="grid grid-cols-3 gap-2">
-                      <Field label="Questions">
-                        <input name="qTotal" type="number" min={0} className="input" inputMode="numeric" />
-                      </Field>
-                      <Field label="Correct">
-                        <input name="qCorrect" type="number" min={0} className="input" inputMode="numeric" />
-                      </Field>
-                      <Field label="Wrong & confident">
-                        <input name="qWrongConf" type="number" min={0} className="input" inputMode="numeric" />
-                      </Field>
-                    </div>
-                  )}
-                  <details>
-                    <summary className="link text-sm">Output (words, speaking min, cases…)</summary>
-                    <div className="mt-2">
-                      <OutputFields />
-                    </div>
-                  </details>
-                  <Field label="Notes / what blocked me (optional)">
-                    <input name="distraction" className="input" placeholder="e.g. checked messages before starting" />
-                  </Field>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" name="unfinished" /> Unfinished (stopped before the intended end)
-                  </label>
-                </div>
-              </ActionForm>
+                <button className="btn btn-lg">{t.pausedAt ? "Resume" : "Pause"}</button>
+              </form>
             </div>
-          ) : (
-            <ActionForm action={startSession} submitLabel="Start timer">
-              <div className="grid grid-cols-2 gap-2">
-                <Field label="Domain">
-                  <DomainSelect />
+            <ActionForm action={completeSession} submitLabel="Finish & save session" submitClass="btn btn-primary btn-lg w-full sm:w-auto">
+              <input type="hidden" name="sessionId" value={t.id} />
+              <div className="mt-5 space-y-5">
+                <Field group label="How focused were you?">
+                  <ChipGroup name="focus" options={FOCUS} />
                 </Field>
-                <Field label="Activity">
-                  <ActivitySelect />
+                <div className="grid grid-cols-2 gap-3">
+                  <Field label="Interruptions">{num("interruptions", "0")}</Field>
+                  <Field label="Task switches">{num("contextSwitches", "0")}</Field>
+                </div>
+                {t.domain === "LAW" && (
+                  <div className="grid grid-cols-3 gap-3">
+                    <Field label="Questions">{num("qTotal")}</Field>
+                    <Field label="Correct">{num("qCorrect")}</Field>
+                    <Field label="Wrong but sure">{num("qWrongConf")}</Field>
+                  </div>
+                )}
+                {t.domain === "GERMAN" && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <Field label="Words written">{num("out_words")}</Field>
+                    <Field label="Minutes actually speaking">{num("out_speakingMin")}</Field>
+                  </div>
+                )}
+                <details>
+                  <summary className="link text-[14px]">More output (pages, cases, drafts…)</summary>
+                  <div className="mt-3">
+                    <OutputFields />
+                  </div>
+                </details>
+                <Field label="What got in the way? (optional)">
+                  <input name="distraction" className="input" placeholder="e.g. checked messages before starting" />
                 </Field>
-                <Field label="Area / skill" className="col-span-2">
-                  <AreaInput />
-                </Field>
-                <Field label="Planned start (optional)">
-                  <input name="plannedStart" type="time" className="input" />
-                </Field>
-                <Field label="Title (optional)">
-                  <input name="title" className="input" />
-                </Field>
+                <label className="flex items-center gap-2 text-[14px]">
+                  <input type="checkbox" name="unfinished" /> I stopped before I meant to
+                </label>
               </div>
             </ActionForm>
-          )}
-        </Panel>
+          </Card>
+        ) : (
+          <Card title="Start a session" sub="The timer keeps running if you leave this page or close the tab.">
+            <ActionForm action={startSession} submitLabel="Start timer" submitClass="btn btn-primary btn-lg w-full sm:w-auto">
+              <SessionPicker defaultDomain={sp.domain} defaultActivity={sp.activity} />
+              <details className="mt-4">
+                <summary className="link text-[14px]">Was this planned for a specific time?</summary>
+                <div className="mt-3 grid grid-cols-2 gap-3">
+                  <Field label="Planned start">
+                    <input name="plannedStart" type="time" className="input" />
+                  </Field>
+                  <Field label="Title (optional)">
+                    <input name="title" className="input" />
+                  </Field>
+                </div>
+              </details>
+            </ActionForm>
+          </Card>
+        )}
 
-        <Panel title="Phone (today)" id="phone" sub="Minutes per category from Screen Time; or import CSV in Data">
-          <ActionForm action={addPhoneUsage} submitLabel="Save phone data">
+        {/* Phone */}
+        <Card title="Phone time today" sub="Copy minutes per category from Screen Time / Digital Wellbeing. Leave empty what you didn't use.">
+          <ActionForm action={addPhoneUsage} submitLabel="Save phone time" submitClass="btn btn-primary btn-lg w-full sm:w-auto">
             <input type="hidden" name="day" value={today} />
-            <PhoneGrid />
-            <div className="mt-2 grid grid-cols-3 gap-2">
-              <Field label="Pickups">
-                <input name="pickups" type="number" min={0} className="input" inputMode="numeric" />
-              </Field>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {PHONE_CATEGORIES.map((c) => (
+                <Field key={c} label={c}>
+                  <div className="relative">
+                    <input name={`cat_${c}`} type="number" min={0} inputMode="numeric" className="input num pr-12" />
+                    <span className="muted pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[12px]">min</span>
+                  </div>
+                </Field>
+              ))}
+            </div>
+            <div className="mt-4 grid grid-cols-3 gap-3">
+              <Field label="Pickups">{num("pickups")}</Field>
               <Field label="First use">
                 <input name="firstUse" type="time" className="input" />
               </Field>
@@ -125,9 +157,9 @@ export default function LogPage() {
                 <input name="lastUse" type="time" className="input" />
               </Field>
             </div>
-            <details className="mt-2">
-              <summary className="link text-sm">Add a timed phone session (enables morning/evening & distraction analysis)</summary>
-              <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <details className="mt-4">
+              <summary className="link text-[14px]">Add one timed phone session (unlocks morning/evening & distraction analysis)</summary>
+              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <Field label="Category">
                   <select name="category" className="input">
                     {PHONE_CATEGORIES.map((c) => (
@@ -135,65 +167,56 @@ export default function LogPage() {
                     ))}
                   </select>
                 </Field>
-                <Field label="Minutes">
-                  <input name="minutes" type="number" min={0} className="input" />
-                </Field>
-                <Field label="Start">
+                <Field label="Minutes">{num("minutes")}</Field>
+                <Field label="From">
                   <input name="start" type="time" className="input" />
                 </Field>
-                <Field label="End">
+                <Field label="To">
                   <input name="end" type="time" className="input" />
                 </Field>
               </div>
             </details>
           </ActionForm>
-        </Panel>
+        </Card>
 
-        <Panel title="Law question set" id="questions">
-          <ActionForm action={logQuestionSet} submitLabel="Save set">
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {/* Questions */}
+        <Card title="Law question set" sub="Log a batch in one go. Confidence matters: a wrong answer you were sure about signals a misconception.">
+          <ActionForm action={logQuestionSet} submitLabel="Save set" submitClass="btn btn-primary btn-lg w-full sm:w-auto">
+            <div className="grid grid-cols-2 gap-3">
               <Field label="Area">
                 <LawAreaSelect />
               </Field>
-              <Field label="Topic">
-                <input name="topic" className="input" placeholder="e.g. art. 415" />
+              <Field label="Topic (optional)">
+                <input name="topic" className="input" placeholder="e.g. art. 415 KC" />
               </Field>
-              <Field label="Total">
-                <input name="total" type="number" min={1} required className="input" inputMode="numeric" />
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <Field label="Answered">
+                <input name="total" type="number" min={1} required inputMode="numeric" className="input num" />
               </Field>
               <Field label="Correct">
-                <input name="correct" type="number" min={0} required className="input" inputMode="numeric" />
+                <input name="correct" type="number" min={0} required inputMode="numeric" className="input num" />
               </Field>
-              <Field label="Wrong & confident">
-                <input name="wrongConfident" type="number" min={0} className="input" inputMode="numeric" />
-              </Field>
-              <Field label="Correct but unsure">
-                <input name="correctUnsure" type="number" min={0} className="input" inputMode="numeric" />
-              </Field>
-              <Field label="Minutes">
-                <input name="minutes" type="number" min={0} className="input" inputMode="numeric" />
-              </Field>
-              <Field label="Difficulty 1–3">
-                <input name="difficulty" type="number" min={1} max={3} className="input" />
+              <Field label="Wrong but sure">{num("wrongConfident")}</Field>
+              <Field label="Right but unsure">{num("correctUnsure")}</Field>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <Field label="Minutes spent">{num("minutes")}</Field>
+              <Field group label="Difficulty">
+                <ChipGroup name="difficulty" options={[{ value: "1", label: "Easy" }, { value: "2", label: "Medium" }, { value: "3", label: "Hard" }]} />
               </Field>
             </div>
           </ActionForm>
-        </Panel>
+        </Card>
 
-        <Panel title="Evening review" id="review" sub="30–60 seconds">
-          <ActionForm action={eveningReview} submitLabel="Save review">
+        {/* Review */}
+        <Card title="Evening review" sub="Four questions. Under a minute.">
+          <ActionForm action={eveningReview} submitLabel="Save review" submitClass="btn btn-primary btn-lg w-full sm:w-auto">
             <input type="hidden" name="day" value={today} />
-            <Field label="Did I execute?">
-              <div className="flex gap-2">
-                {["yes", "partial", "no"].map((x) => (
-                  <label key={x} className="flex-1">
-                    <input type="radio" name="executed" value={x} className="peer sr-only" defaultChecked={x === "partial"} />
-                    <span className="btn w-full capitalize peer-checked:border-[var(--accent)] peer-checked:bg-[var(--accent)] peer-checked:text-white">{x}</span>
-                  </label>
-                ))}
-              </div>
+            <Field group label="Did I execute my plan?">
+              <ChipGroup name="executed" defaultValue="partial" options={[{ value: "yes", label: "Yes" }, { value: "partial", label: "Partly" }, { value: "no", label: "No" }]} />
             </Field>
-            <div className="mt-2 grid gap-2">
+            <div className="mt-4 grid gap-3">
               <Field label="What blocked me?">
                 <input name="blocked" className="input" />
               </Field>
@@ -205,160 +228,135 @@ export default function LogPage() {
               </Field>
             </div>
           </ActionForm>
-        </Panel>
+        </Card>
 
-        <Panel title="German output evaluation" id="german">
-          <ActionForm action={logGermanEval} submitLabel="Save evaluation">
-            <div className="grid grid-cols-3 gap-2">
-              <Field label="Type">
-                <select name="kind" className="input">
-                  <option value="writing">Writing</option>
-                  <option value="speaking">Speaking</option>
-                </select>
-              </Field>
-              <Field label="Words (writing)">
-                <input name="words" type="number" min={1} className="input" />
-              </Field>
+        {/* German */}
+        <Card title="German output" sub="Count errors in a text or a recorded conversation. This is what shows whether practice is turning into accuracy.">
+          <ActionForm action={logGermanEval} submitLabel="Save evaluation" submitClass="btn btn-primary btn-lg w-full sm:w-auto">
+            <Field group label="What did you evaluate?">
+              <ChipGroup name="kind" defaultValue="writing" options={[{ value: "writing", label: "A written text" }, { value: "speaking", label: "Speaking" }]} />
+            </Field>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <Field label="Words (text)">{num("words")}</Field>
               <Field label="Minutes (speaking)">
-                <input name="minutes" type="number" min={0} step="any" className="input" />
+                <input name="minutes" type="number" min={0} step="any" inputMode="decimal" className="input num" />
               </Field>
             </div>
-            <div className="label mt-3">Errors by category</div>
-            <div className="mt-1 grid grid-cols-3 gap-2 sm:grid-cols-4">
+            <div className="label mb-2 mt-4">Errors by type</div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {GERMAN_ERROR_CATEGORIES.map((c) => (
-                <Field key={c} label={c}>
-                  <input name={`err_${c}`} type="number" min={0} className="input" inputMode="numeric" />
+                <Field key={c} label={c[0].toUpperCase() + c.slice(1)}>
+                  {num(`err_${c}`)}
                 </Field>
               ))}
             </div>
           </ActionForm>
-          <div className="mt-4 border-t pt-3" style={{ borderColor: "var(--border)" }}>
-            <ActionForm action={logVocab} submitLabel="Save vocab review">
-              <div className="grid grid-cols-3 gap-2">
-                <Field label="Reviewed">
-                  <input name="reviewed" type="number" min={0} className="input" />
-                </Field>
-                <Field label="Correct">
-                  <input name="correct" type="number" min={0} className="input" />
-                </Field>
-                <Field label="New words">
-                  <input name="newWords" type="number" min={0} className="input" />
-                </Field>
+          <div className="mt-6 border-t pt-5" style={{ borderColor: "var(--border)" }}>
+            <h3 className="text-[15px] font-semibold">Vocabulary review</h3>
+            <ActionForm action={logVocab} submitLabel="Save vocabulary" submitClass="btn">
+              <div className="mt-3 grid grid-cols-3 gap-3">
+                <Field label="Reviewed">{num("reviewed")}</Field>
+                <Field label="Correct">{num("correct")}</Field>
+                <Field label="New words">{num("newWords")}</Field>
               </div>
             </ActionForm>
           </div>
-        </Panel>
+        </Card>
 
-        <Panel title="Morning check-in & recovery (optional)" id="recovery" sub="Used for planning and sustainability analysis — never for medical conclusions">
-          <ActionForm action={morningCheckin} submitLabel="Save check-in">
-            <div className="grid grid-cols-3 gap-2">
-              <Field label="Wake time">
+        {/* Energy */}
+        <Card title="Energy & sleep (optional)" sub="Helps plan realistic days and spot overload. Never used for medical conclusions.">
+          <ActionForm action={morningCheckin} submitLabel="Save morning check-in" submitClass="btn btn-primary">
+            <div className="grid grid-cols-2 gap-3">
+              <Field label="Woke up at">
                 <input name="wakeTime" type="time" className="input" />
               </Field>
-              <Field label="Available min">
-                <input name="availableMinutes" type="number" min={0} className="input" />
-              </Field>
-              <Field label="Energy 1–5">
-                <input name="energy" type="number" min={1} max={5} className="input" />
+              <Field label="Time available today (min)">{num("availableMinutes", "e.g. 360")}</Field>
+            </div>
+            <div className="mt-3">
+              <Field group label="Energy">
+                <ChipGroup name="energy" options={SCALE} />
               </Field>
             </div>
           </ActionForm>
-          <div className="mt-4 border-t pt-3" style={{ borderColor: "var(--border)" }}>
-            <ActionForm action={logRecovery} submitLabel="Save recovery">
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-                <Field label="Sleep h">
-                  <input name="sleepHours" type="number" step="0.1" min={0} max={24} className="input" />
+          <div className="mt-6 border-t pt-5" style={{ borderColor: "var(--border)" }}>
+            <ActionForm action={logRecovery} submitLabel="Save sleep & recovery" submitClass="btn">
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Sleep (hours)">
+                  <input name="sleepHours" type="number" step="0.25" min={0} max={24} inputMode="decimal" className="input num" />
                 </Field>
-                <Field label="Sleep quality">
-                  <input name="sleepQuality" type="number" min={1} max={5} className="input" />
+                <Field group label="Sleep quality">
+                  <ChipGroup name="sleepQuality" options={SCALE} />
                 </Field>
-                <Field label="Energy">
-                  <input name="energy" type="number" min={1} max={5} className="input" />
+              </div>
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <Field group label="Fatigue">
+                  <ChipGroup name="fatigue" options={SCALE} />
                 </Field>
-                <Field label="Fatigue">
-                  <input name="fatigue" type="number" min={1} max={5} className="input" />
-                </Field>
-                <Field label="Recovery">
-                  <input name="recovery" type="number" min={1} max={5} className="input" />
+                <Field group label="Recovery feeling">
+                  <ChipGroup name="recovery" options={SCALE} />
                 </Field>
               </div>
             </ActionForm>
           </div>
-        </Panel>
+        </Card>
 
-        <Panel title="Log a past session" id="retro">
-          <ActionForm action={logSession} submitLabel="Log session">
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {/* Past session */}
+        <Card title="Log a past session" sub="Forgot the timer? Add it afterwards.">
+          <ActionForm action={logSession} submitLabel="Save session" submitClass="btn btn-primary btn-lg w-full sm:w-auto">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               <Field label="Day">
                 <input name="day" type="date" defaultValue={today} className="input" />
               </Field>
+              <Field label="From">
+                <input name="start" type="time" required className="input" />
+              </Field>
+              <Field label="To">
+                <input name="end" type="time" className="input" />
+              </Field>
+              <Field label="or minutes">{num("minutes")}</Field>
               <Field label="Domain">
                 <DomainSelect />
               </Field>
               <Field label="Activity">
                 <ActivitySelect />
               </Field>
-              <Field label="Start">
-                <input name="start" type="time" required className="input" />
-              </Field>
-              <Field label="End">
-                <input name="end" type="time" className="input" />
-              </Field>
-              <Field label="or Minutes">
-                <input name="minutes" type="number" min={0} className="input" />
-              </Field>
-              <Field label="Area / skill">
+              <Field label="Area / skill" className="col-span-2">
                 <AreaInput />
               </Field>
-              <Field label="Planned start">
-                <input name="plannedStart" type="time" className="input" />
-              </Field>
-              <Field label="Interruptions">
-                <input name="interruptions" type="number" min={0} className="input" />
+            </div>
+            <div className="mt-4">
+              <Field group label="Focus">
+                <ChipGroup name="focus" options={FOCUS} />
               </Field>
             </div>
-            <div className="mt-2">
-              <Field label="Focus">
-                <FocusRadio />
-              </Field>
-            </div>
-            <details className="mt-2">
-              <summary className="link text-sm">Output & questions</summary>
-              <div className="mt-2 grid grid-cols-3 gap-2">
-                <Field label="Questions">
-                  <input name="qTotal" type="number" min={0} className="input" />
-                </Field>
-                <Field label="Correct">
-                  <input name="qCorrect" type="number" min={0} className="input" />
-                </Field>
-                <Field label="Wrong & confident">
-                  <input name="qWrongConf" type="number" min={0} className="input" />
-                </Field>
+            <details className="mt-4">
+              <summary className="link text-[14px]">Questions & output</summary>
+              <div className="mt-3 grid grid-cols-3 gap-3">
+                <Field label="Questions">{num("qTotal")}</Field>
+                <Field label="Correct">{num("qCorrect")}</Field>
+                <Field label="Wrong but sure">{num("qWrongConf")}</Field>
               </div>
-              <div className="mt-2">
+              <div className="mt-3">
                 <OutputFields />
               </div>
             </details>
           </ActionForm>
-        </Panel>
+        </Card>
 
-        <Panel title="Note" id="note">
-          <ActionForm action={addNote} submitLabel="Save note">
-            <div className="grid grid-cols-3 gap-2">
-              <Field label="Kind">
-                <select name="kind" className="input">
-                  <option value="distraction">Distraction</option>
-                  <option value="insight">Insight</option>
-                  <option value="general">General</option>
-                </select>
-              </Field>
-              <Field label="Text" className="col-span-2">
-                <input name="text" className="input" required />
+        {/* Note */}
+        <Card title="Quick note">
+          <ActionForm action={addNote} submitLabel="Save note" submitClass="btn btn-primary">
+            <Field group label="Type">
+              <ChipGroup name="kind" defaultValue="insight" options={[{ value: "distraction", label: "Distraction" }, { value: "insight", label: "Insight" }, { value: "general", label: "General" }]} />
+            </Field>
+            <div className="mt-3">
+              <Field label="Note">
+                <textarea name="text" rows={3} className="input" required />
               </Field>
             </div>
           </ActionForm>
-        </Panel>
-      </Grid>
+        </Card>
+      </Tabs>
     </div>
   );
 }

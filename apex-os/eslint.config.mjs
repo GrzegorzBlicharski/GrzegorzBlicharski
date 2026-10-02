@@ -3,7 +3,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import nextPlugin from "@next/eslint-plugin-next";
 
 export default tseslint.config(
-  { ignores: [".next/**", "node_modules/**", "data/**", "next-env.d.ts"] },
+  { ignores: [".next/**", "node_modules/**", "data/**", "next-env.d.ts", "web/dist/**"] },
   ...tseslint.configs.recommended,
   {
     plugins: { "react-hooks": reactHooks, "@next/next": nextPlugin },

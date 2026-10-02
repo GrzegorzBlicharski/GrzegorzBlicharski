@@ -26,7 +26,7 @@ export default function GermanPage() {
   const tests = ds.tests.filter((t) => t.domain === "GERMAN").slice(-12).reverse();
   return (
     <div className="space-y-3">
-      <PageHeader title="German" subtitle="INPUT (time by skill) → PROCESS (active ratio, mix) → OUTPUT (words, speaking) → OUTCOME (error rates, tests, CEFR evidence)" />
+      <PageHeader title="German" subtitle="Where your German time goes, what it produces, and whether accuracy is actually improving." />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         <Kpi label="Time 30D" value={fmtMin(mix30.total / 30)} sub="per day" metricKey="german.min" />
         <Kpi label="Active ratio 30D" value={fmtPct((mix30.activeRatio ?? 0) * 100)} sub={`active ${fmtMin(mix30.active)} · passive ${fmtMin(mix30.passive)}`} tone={mix30.passiveShareFlag ? "warn" : "neutral"} metricKey="german.activeRatio" />

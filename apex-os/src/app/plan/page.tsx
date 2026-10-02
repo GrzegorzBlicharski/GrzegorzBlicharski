@@ -25,7 +25,7 @@ export default async function PlanPage({ searchParams }: { searchParams: Promise
   const realismTone = plan.realism.label === "realistic" ? "good" : plan.realism.label === "stretch" ? "warn" : plan.realism.label === "unlikely" ? "risk" : "neutral";
   return (
     <div className="space-y-3">
-      <PageHeader title="Adaptive plan" subtitle="Built from available time, historical execution, sustained capacity, goals, due reviews and best hours. Advice — you decide.">
+      <PageHeader title="Adaptive plan" subtitle="A day sized to what you actually get done, with the hardest work in your best hours.">
         {(["minimum", "normal", "high"] as PlanMode[]).map((m) => (
           <Link key={m} href={`/plan?mode=${m}${available ? `&available=${available}` : ""}${energy ? `&energy=${energy}` : ""}`} className={`btn btn-sm ${m === mode ? "btn-primary" : ""}`}>
             {m === "minimum" ? "Minimum day" : m === "normal" ? "Normal day" : "High-capacity day"}

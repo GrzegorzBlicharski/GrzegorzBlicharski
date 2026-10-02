@@ -28,7 +28,7 @@ export default function GoalsPage() {
   ];
   return (
     <div className="space-y-3">
-      <PageHeader title="Goals & forecasts" subtitle="Leading indicators (what you do now) → lagging indicators (results). Forecasts are logged and scored later.">
+      <PageHeader title="Goals & forecasts" subtitle="Progress against each goal, the pace you need, and realistic forecasts — each one checked later for accuracy.">
         <form action={recordForecasts}>
           <button className="btn">Record forecast snapshot</button>
         </form>

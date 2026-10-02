@@ -24,7 +24,7 @@ export default function ExecutionPage() {
   const stab = behaviourStability(ds, "productive.min");
   return (
     <div className="space-y-3">
-      <PageHeader title="Execution" subtitle="PLAN vs ACTUAL. Time ≠ output ≠ performance ≠ improvement — an 8-hour day is not automatically a good day." />
+      <PageHeader title="Execution" subtitle="Planned versus done, and whether your plans match what you can really sustain." />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         <Kpi label="Today" value={fmtPct(today.pct, 1)} sub={today.plannedDays ? `planned ${fmtMin(today.planned)} · actual ${fmtMin(today.actual)}` : "no plan"} metricKey="exec.pct" />
         <Kpi label="Execution 30D" value={fmtPct(op.executionPct, 1)} sub={`planned ${fmtMin(op.plannedAvg)} · actual ${fmtMin(op.actualAvg)}`} tone={op.detected ? "warn" : "neutral"} />

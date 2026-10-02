@@ -56,6 +56,7 @@ await build({
 execSync(`npx @tailwindcss/cli -i src/app/globals.css -o web/dist/app.css --minify`, { cwd: root, stdio: "inherit" });
 const css = readFileSync(path.join(out, "app.css"), "utf8");
 const html = `<title>APEX OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>${css}
 #boot{display:flex;min-height:80vh;align-items:center;justify-content:center;padding-inline:16px}
 #boot .box{max-width:420px}
@@ -65,7 +66,7 @@ const html = `<title>APEX OS</title>
 @media (prefers-reduced-motion: reduce){#boot .bar i{animation:none;width:100%}}
 </style>
 <div id="boot"><div class="box">
-<div style="font-weight:700;letter-spacing:.2em;font-size:13px">APEX OS</div>
+<div style="font-weight:700;letter-spacing:.14em;font-size:15px">APEX OS</div>
 <div class="muted" style="font-size:11px;margin-top:2px">Personal performance, learning &amp; life intelligence</div>
 <p class="text-2" id="boot-msg" style="margin-top:18px;font-size:14px">Loading…</p>
 <div class="bar"><i></i></div>

@@ -31,7 +31,7 @@ export default function TimelinePage() {
   const rec = records(ds);
   return (
     <div className="space-y-3">
-      <PageHeader title="Timeline & records" subtitle="Strategy changes, milestones, tests, interventions — a document of transformation over years." />
+      <PageHeader title="Timeline & records" subtitle="Milestones, tests and changes of strategy — the record of how you got here." />
       <Grid cols="lg:grid-cols-3">
         <Panel title="Timeline" className="lg:col-span-2">
           {items.length ? (

@@ -21,7 +21,7 @@ export default function AttentionPage() {
   const q = bh.hours.filter((h) => h.minutes > 0);
   return (
     <div className="space-y-3">
-      <PageHeader title="Attention & deep work" subtitle="Attention treated as a resource. Best hours are computed from your data — never asked." />
+      <PageHeader title="Attention & deep work" subtitle="How long you can focus, when you focus best, and what interrupts you. Best hours come from your own data." />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
         <Kpi label="Deep today" value={fmtMin(deep.todayMin)} metricKey="deep.min" />
         <Kpi label="Deep / day (7D)" value={fmtMin(deep.perDay7)} sub={`${fmtNum(deep.perWeek / 60, 1)} h this week`} />
