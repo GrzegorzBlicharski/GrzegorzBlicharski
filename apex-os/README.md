@@ -62,3 +62,9 @@ Totals, averages, streaks, trends and forecasts are never entered by hand.
 | `npm run seed:large -- --reset=true` | 3-year high-volume stress profile (~100k sessions, ~1M answers) |
 | `npm run docs:metrics` | regenerate `docs/METRICS.md` from the registry |
 | `npm run rebuild` | drop and replay all projections from the event log |
+
+## Browser edition (no install)
+`npm run build:web` bundles the same engine and screens into `web/dist` (SQLite compiled to WASM via sql.js).
+Published as a private claude.ai artifact: the event log is stored in the artifact's private per-user store
+(`data/users/<you>/…`, in ≤190 KB chunks) and mirrored in the browser's IndexedDB; projections are rebuilt
+from the log on every load. Downloads (backup/CSV) go through the viewer's download prompt.
