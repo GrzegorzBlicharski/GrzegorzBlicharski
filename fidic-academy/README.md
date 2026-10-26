@@ -35,7 +35,7 @@ Program jest pisany dla prawnika kontraktowego bez wykształcenia inżynierskieg
 | 12 | [12-spory-i-negocjacje.md](12-spory-i-negocjacje.md) | DAAB, arbitraż, mediacja, negocjacje roszczeń, biegli |
 | 13 | [13-poziom-ekspercki-i-kariera.md](13-poziom-ekspercki-i-kariera.md) | Drafting PC, alokacja ryzyka, capstone, certyfikacje, rynek pracy |
 | 14 | [14-jezyk-ekspercki-en-de.md](14-jezyk-ekspercki-en-de.md) | Angielski C2 legal i niemiecki C1 Fachsprache: rejestr, kolokacje, frazy, false friends, interview drills |
-| — | [slownik-pl-en-de.md](slownik-pl-en-de.md) | Słownik ekspercki PL–EN–DE (~270 terminów z niuansami) |
+| — | [slownik-pl-en-de.md](slownik-pl-en-de.md) | Słownik ekspercki PL–EN–DE (~280 terminów z niuansami) |
 | — | [szablony/](szablony/) | Wzory pism EN/DE/PL i specyfikacja rejestrów |
 | — | [egzaminy.md](egzaminy.md) | Egzaminy poziomów L1–L4 z kluczem |
 
@@ -60,3 +60,8 @@ Program jest pisany dla prawnika kontraktowego bez wykształcenia inżynierskieg
 - *Keating on Construction Contracts*; *Hudson's Building and Engineering Contracts* (dla poziomu L4).
 - PL: Kodeks cywilny, ustawa Pzp z 11.09.2019, Prawo budowlane; komentarze (np. Strzępka, Gutowski).
 - DE: BGB §§ 631–650v, VOB/B, VOB/A, HOAI; Kapellmann/Schiffers *Vergütung, Nachträge und Behinderungsfolgen beim Bauvertrag*; Werner/Pastor *Der Bauprozess*.
+
+## Wersja interaktywna
+
+Cały kurs w jednej stronie HTML (nawigacja po modułach, śledzenie ukończonych lekcji, wyszukiwarka słownika, harmonogram 52 tygodni): [kurs-html/akademia-fidic.html](kurs-html/akademia-fidic.html).
+Po zmianie plików `.md` przebuduj stronę: `pip install markdown && python3 kurs-html/build.py . kurs-html/akademia-fidic.html` (uruchom w folderze `fidic-academy`).
